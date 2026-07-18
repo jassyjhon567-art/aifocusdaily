@@ -9,32 +9,129 @@ from datetime import datetime
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 
-# ১০টি বিশ্বস্ত এবং বৈচিত্র্যময় গ্লোবাল সোর্স (ভবিষ্যতে আরো সহজে যুক্ত করা যাবে)
-FEEDS = {
-    "TechCrunch AI": "https://techcrunch.com/category/artificial-intelligence/feed/",
-    "VentureBeat AI": "https://venturebeat.com/category/ai/feed/",
-    "Wired Technology": "https://www.wired.com/feed/category/gear/latest/rss",
-    "The Verge Tech": "https://www.theverge.com/rss/index.xml",
-    "Mashable Tech": "https://mashable.com/feeds/rss/technology",
-    "Engadget News": "https://www.engadget.com/rss.xml",
-    "MIT Tech Review": "https://www.technologyreview.com/feed/",
-    "ReadWrite AI": "https://readwrite.com/feed/",
-    "MakeUseOf Guides": "https://www.makeuseof.com/feed/",
-    "Google News Tech": "https://news.google.com/rss/search?q=technology&hl=en-US&gl=US&ceid=US:en"
+# ১০টি নিশের প্রতিটিতে ১০টি করে মোট ১০০টি গ্লোবাল সোর্স (১০০% স্কেলযোগ্য)
+NICHES_FEEDS = {
+    "Artificial Intelligence": [
+        "https://techcrunch.com/category/artificial-intelligence/feed/",
+        "https://venturebeat.com/category/ai/feed/",
+        "https://www.wired.com/feed/tag/ai/latest/rss",
+        "https://www.forbes.com/artificial-intelligence/feed/",
+        "https://www.technologyreview.com/topic/artificial-intelligence/feed/",
+        "https://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml",
+        "https://www.reddit.com/r/MachineLearning/.rss",
+        "https://openai.com/news/rss.xml",
+        "https://blog.google/technology/ai/rss/",
+        "https://www.artificialintelligence-news.com/feed/"
+    ],
+    "Technology & Gadgets": [
+        "https://www.wired.com/feed/category/gear/latest/rss",
+        "https://www.theverge.com/rss/index.xml",
+        "https://www.engadget.com/rss.xml",
+        "https://mashable.com/feeds/rss/technology",
+        "https://www.techradar.com/rss",
+        "https://gizmodo.com/rss",
+        "https://www.digitaltrends.com/feed/",
+        "https://www.cnet.com/rss/all/",
+        "https://www.slashgear.com/feed/",
+        "https://www.pocket-lint.com/rss.xml"
+    ],
+    "Software & Development": [
+        "https://feed.infoq.com/",
+        "https://dev.to/feed",
+        "https://news.ycombinator.com/rss",
+        "https://www.sitepoint.com/feed/",
+        "https://codepen.io/blog/feed/",
+        "https://www.smashingmagazine.com/feed/",
+        "https://www.kodeco.com/feed",
+        "https://feeds.dzone.com/home",
+        "https://sdtimes.com/feed/",
+        "https://css-tricks.com/feed/"
+    ],
+    "How-To Guides & Tutorials": [
+        "https://www.howtogeek.com/feed/",
+        "https://www.makeuseof.com/feed/",
+        "https://lifehacker.com/rss",
+        "https://www.guidingtech.com/feed/",
+        "https://techpp.com/feed/",
+        "https://www.pcworld.com/index.rss",
+        "https://www.techlicious.com/rss/",
+        "https://www.onlinetechtips.com/feed/",
+        "https://helpdeskgeek.com/feed/",
+        "https://techwiser.com/feed/"
+    ],
+    "Blogging, SEO & Digital Marketing": [
+        "https://searchengineland.com/feed",
+        "https://www.searchenginejournal.com/feed/",
+        "https://neilpatel.com/blog/feed/",
+        "https://copyblogger.com/feed/",
+        "https://moz.com/blog/feed",
+        "https://blog.hubspot.com/marketing/rss.xml",
+        "https://contentmarketinginstitute.com/feed/",
+        "https://backlinko.com/feed",
+        "https://www.socialmediaexaminer.com/feed/",
+        "https://ahrefs.com/blog/feed/"
+    ],
+    "Cyber Security & Privacy": [
+        "https://www.darkreading.com/rss.xml",
+        "https://krebsonsecurity.com/feed/",
+        "https://thehackernews.com/feeds/posts/default",
+        "https://nakedsecurity.sophos.com/feed/",
+        "https://feeds.feedburner.com/securityweek",
+        "https://www.bleepingcomputer.com/feed/",
+        "https://www.malwarebytes.com/blog/feed/",
+        "https://grahamcluley.com/feed/",
+        "https://www.schneier.com/blog/index.rdf"
+    ],
+    "Business & Productivity": [
+        "https://www.fastcompany.com/latest/rss",
+        "https://feeds.hbr.org/harvardbusiness",
+        "https://www.entrepreneur.com/latest.rss",
+        "https://www.forbes.com/technology/feed/",
+        "https://www.inc.com/latest.rss",
+        "https://productivityland.com/feed/",
+        "https://www.asianefficiency.com/feed/",
+        "https://todoist.com/inspiration/feed",
+        "https://blog.trello.com/feed",
+        "https://slack.com/blog/feed"
+    ],
+    "Education & Science": [
+        "https://www.scientificamerican.com/news/rss/",
+        "https://www.newscientist.com/feed/",
+        "https://www.sciencedaily.com/rss/all.xml",
+        "https://phys.org/rss-feed/",
+        "https://www.space.com/feeds/all",
+        "https://www.edutopia.org/rss.xml",
+        "https://blog.ted.com/feed/",
+        "https://www.insidehighered.com/rss/news",
+        "https://www.smithsonianmag.com/rss/",
+        "https://www.nasa.gov/news-release/feed/"
+    ],
+    "Health & Wellness": [
+        "https://www.healthline.com/feed",
+        "https://www.medicalnewstoday.com/feed",
+        "https://www.health.harvard.edu/blog/feed",
+        "https://www.sciencedaily.com/rss/health_medicine.xml",
+        "https://rssfeeds.webmd.com/rss/rss.aspx",
+        "https://www.mindbodygreen.com/rss",
+        "https://www.wellandgood.com/feed/",
+        "https://greatist.com/feed",
+        "https://newsnetwork.mayoclinic.org/feed/",
+        "https://www.activebeat.com/feed/"
+    ],
+    "Lifestyle & Internet Tips": [
+        "https://www.gq.com/feed/rss",
+        "https://www.vogue.com/feed/rss",
+        "https://www.apartmenttherapy.com/main.rss",
+        "https://www.thespruce.com/rss",
+        "https://www.realsimple.com/rss",
+        "https://mashable.com/feeds/rss/lifestyle",
+        "https://www.howtogeek.com/category/internet/feed/",
+        "https://www.makeuseof.com/category/internet/feed/",
+        "https://www.digitaltrends.com/cool-tech/feed/",
+        "https://www.wired.com/feed/category/culture/latest/rss"
+    ]
 }
 
-MAX_NEWS = 50
-NEWS_FILE = "news.json"
-POSTS_DIR = "posts"
-IMAGES_DIR = "images"
-
-def slugify(text):
-    text = text.lower()
-    text = re.sub(r'[^a-z0-9\s-]', '', text)
-    text = re.sub(r'[\s-]+', '-', text)
-    return text.strip('-')
-
-# একাধিক সোর্সের খবরগুলোর মধ্যে ডুপ্লিকেট নিউজ এড়ানোর অ্যালগরিদম
 def is_duplicate(title1, title2):
     words1 = set(re.sub(r'[^a-z0-9\s]', '', title1.lower()).split())
     words2 = set(re.sub(r'[^a-z0-9\s]', '', title2.lower()).split())
@@ -42,9 +139,9 @@ def is_duplicate(title1, title2):
         return False
     overlap = words1.intersection(words2)
     ratio = len(overlap) / min(len(words1), len(words2))
-    return ratio > 0.5  # ৫০% এর বেশি শব্দের মিল থাকলে ডুপ্লিকেট হিসেবে বাদ যাবে
+    return ratio > 0.5
 
-# আরএসএস ফিড থেকে মূল আর্টিকেলের অরিজিনাল ইমেজ লিঙ্কটি খুঁজে বের করার ফাংশন
+# আরএসএস ফিড থেকে মূল আর্টিকেলের অরিজিনাল ইমেজ লিঙ্ক খুঁজে বের করার ফাংশন
 def extract_rss_image(entry):
     if 'media_content' in entry and len(entry.media_content) > 0:
         if 'url' in entry.media_content[0]:
@@ -87,6 +184,25 @@ def translate_full_content_bn(text):
             translated_p = translate_to_bengali_fallback(p_clean)
             translated_paragraphs.append(f"<p>{translated_p}</p>")
     return "".join(translated_paragraphs)
+
+# টাইটেল কিওয়ার্ড বিশ্লেষণ করে গ্যারান্টিড বাস্তবধর্মী হাই-কোয়ালিটি কপিরাইট-মুক্ত ছবি সেট করার অ্যালগরিদম
+def get_smart_fallback_image(title):
+    title_lower = title.lower()
+    if any(w in title_lower for w in ["railway", "train", "transport", "infrastructure"]):
+        return "https://images.unsplash.com/photo-1532103054090-334e6e60ab29?auto=format&fit=crop&w=800&q=80"
+    elif any(w in title_lower for w in ["database", "data", "cloud", "server", "aws", "azure", "databricks"]):
+        return "https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&w=800&q=80"
+    elif any(w in title_lower for w in ["security", "hack", "cyber", "lock", "protect", "zoom", "exploit"]):
+        return "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80"
+    elif any(w in title_lower for w in ["phone", "iphone", "android", "mobile", "vertu", "foldable", "gadget"]):
+        return "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=80"
+    elif any(w in title_lower for w in ["code", "dev", "developer", "software", "website", "app", "tutorial"]):
+        return "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80"
+    elif any(w in title_lower for w in ["health", "lifestyle", "fitness", "doctor", "medical"]):
+        return "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=800&q=80"
+    elif any(w in title_lower for w in ["ai", "artificial intelligence", "model", "llm", "chatgpt", "gemini", "robot", "brain"]):
+        return "https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80"
+    return "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=800&q=80"
 
 # জেমিনি এপিআই দিয়ে একবারে বাংলা ও ইংরেজি অনুবাদ এবং বিস্তারিত কন্টেন্ট তৈরি করা
 def rewrite_bilingual_gemini(api_key, title, raw_desc):
@@ -146,10 +262,10 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
         print(f"Error during Gemini rewrite: {str(e)}")
         return None
 
-# এআই বা কোড দ্বারা ছবি ডাউনলোড ও ম্যাচিং করার ফাংশন
-def download_ai_image(prompt, slug):
+# বাস্তবধর্মী এআই ছবি জেনারেশন
+def download_ai_image(prompt, slug, title):
     local_path = f"{IMAGES_DIR}/{slug}.jpg"
-    fallback_url = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80"
+    fallback_url = get_smart_fallback_image(title)
     try:
         prompt_encoded = urllib.parse.quote(prompt)
         img_api_url = f"https://image.pollinations.ai/p/{prompt_encoded}?width=800&height=450&nologo=true"
@@ -163,7 +279,7 @@ def download_ai_image(prompt, slug):
     return fallback_url
 
 # বাংলা ও ইংরেজি পৃথক এসইও স্ট্যাটিক পেজ জেনারেট করা
-def generate_post_html(slug, title, summary, content, img_path, lang, other_lang_url, source, original_date):
+def generate_post_html(slug, title, summary, content, img_path, lang, other_lang_url, source, original_date, orig_link):
     lang_dir = os.path.join(POSTS_DIR, lang)
     os.makedirs(lang_dir, exist_ok=True)
     file_path = os.path.join(lang_dir, f"{slug}.html")
@@ -269,6 +385,28 @@ def generate_post_html(slug, title, summary, content, img_path, lang, other_lang
         .nav-links {{ display: flex; justify-content: space-between; margin-bottom: 2rem; }}
         a.btn {{ color: #00f2fe; text-decoration: none; font-weight: bold; font-size: 0.95rem; }}
         a.btn:hover {{ text-decoration: underline; }}
+        
+        /* 'Read More – Original Article' গ্লোয়িং বাটনের স্টাইল */
+        .btn-original-container {{
+            text-align: center;
+            margin-top: 3rem;
+            margin-bottom: 1.5rem;
+        }}
+        .original-article-btn {{
+            display: inline-block;
+            background: linear-gradient(45deg, #00f2fe, #4facfe);
+            color: #0d0e15;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+            transition: all 0.3s ease;
+        }}
+        .original-article-btn:hover {{
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.8);
+        }}
     </style>
 </head>
 <body>
@@ -284,6 +422,10 @@ def generate_post_html(slug, title, summary, content, img_path, lang, other_lang
         </div>
         <div class="content">
             {content}
+        </div>
+        <!-- অরিজিনাল নিউজ ভেরিফাই করার চূড়ান্ত গ্লোয়িং বাটন -->
+        <div class="btn-original-container">
+            <a href="{orig_link}" target="_blank" rel="noopener noreferrer" class="original-article-btn">Read More – Original Article</a>
         </div>
     </div>
 </body>
@@ -315,14 +457,15 @@ def main():
 
     # সব সোর্স থেকে খবরের ডেটা স্ক্যান
     raw_feed_entries = []
-    for source, url in FEEDS.items():
-        try:
-            response = requests.get(url, headers=headers, timeout=15)
-            feed = feedparser.parse(response.content)
-            for entry in feed.entries:
-                raw_feed_entries.append((entry, source))
-        except Exception as e:
-            print(f"Error reading source {source}: {e}")
+    for niche, feeds_list in NICHES_FEEDS.items():
+        for url in feeds_list:
+            try:
+                response = requests.get(url, headers=headers, timeout=15)
+                feed = feedparser.parse(response.content)
+                for entry in feed.entries:
+                    raw_feed_entries.append((entry, niche))
+            except Exception as e:
+                print(f"Error reading feed {url} under {niche}: {e}")
 
     # ডুপ্লিকেট নিউজ এড়ানো এবং সবচেয়ে ভালো সোর্স নির্বাচন করা
     unique_entries = []
@@ -339,7 +482,7 @@ def main():
         if not is_dup:
             unique_entries.append((entry, source))
 
-    # প্রতি রানে সর্বোচ্চ ৫টি নতুন খবর রিরাইট করা হবে (এপিআই রিকোয়েস্ট লিমিট ঠিক রাখতে)
+    # প্রতি রানে সর্বোচ্চ ৫টি নতুন খবর রিরাইট করা হবে
     for entry, source in unique_entries[:5]:
         try:
             title = entry.get('title', 'No Title')
@@ -347,7 +490,7 @@ def main():
             original_date = entry.get('published', datetime.now().strftime("%Y-%m-%d"))
             orig_link = entry.get('link', '')
             
-            print(f"Processing: {title} (Source: {source})")
+            print(f"Processing: {title} (Source Category: {source})")
             
             # আরএসএস থেকে অরিজিনাল ছবি
             orig_img = extract_rss_image(entry)
@@ -385,11 +528,16 @@ def main():
             if orig_img:
                 img_url = orig_img
             else:
-                img_url = download_ai_image(image_prompt, slug)
+                img_url = download_ai_image(image_prompt, slug, title)
 
-            # বাংলা ও ইংরেজি পৃথক পেজ জেনারেশন
-            generate_post_html(slug, title_bn, summary_bn, content_bn, img_url, "bn", f"../en/{slug}.html", source, original_date)
-            generate_post_html(slug, title_en, summary_en, content_en, img_url, "en", f"../bn/{slug}.html", source, original_date)
+            # কঠোর নিয়ম: যদি কোনো ছবি না পাওয়া যায়, তবে নিউজটি প্রকাশ করা হবে না (Skip করা হবে)
+            if not img_url or img_url == "":
+                print(f"Skipping article '{title}' because no valid image is available.")
+                continue
+
+            # বাংলা ও ইংরেজি দুটি পৃথক পেজ জেনারেশন
+            generate_post_html(slug, title_bn, summary_bn, content_bn, img_url, "bn", f"../en/{slug}.html", source, original_date, orig_link)
+            generate_post_html(slug, title_en, summary_en, content_en, img_url, "en", f"../bn/{slug}.html", source, original_date, orig_link)
             
             existing_news.insert(0, {
                 "title_en": title_en,
