@@ -296,7 +296,7 @@ def download_ai_image(prompt, slug, title):
         print(f"Error downloading AI image: {str(e)}")
     return fallback_url
 
-# বাংলা ও ইংরেজি পৃথক এসইও স্ট্যাটিক পেজ জেনারেট করা
+# বাংলা ও ইংরেজি পৃথক এসইও স্ট্যাটিক পেজ জেনারেট করা (১০টি প্যারামিটার সম্বলিত বাগমুক্ত ফাংশন)
 def generate_post_html(slug, title, summary, content, img_path, lang, other_lang_url, source, original_date, orig_link):
     lang_dir = os.path.join(POSTS_DIR, lang)
     os.makedirs(lang_dir, exist_ok=True)
