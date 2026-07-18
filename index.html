@@ -177,17 +177,6 @@
             font-size: 1.2rem;
         }
 
-        .ad-container {
-            width: 100%;
-            max-width: 728px;
-            margin: 2rem auto;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px dashed rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-        }
-
         footer {
             margin-top: auto;
             padding: 2rem;
@@ -213,17 +202,8 @@
         <p class="subtitle" id="main-subtitle">নতুন এআই রিলিজ এবং আপডেটগুলোর অটোমেটেড বাংলা প্ল্যাটফর্ম।</p>
     </header>
 
-    <!-- Adsterra Ad -->
-    <div class="ad-container">
-        <p style="color: #475569; margin: 0; font-size: 0.8rem;">Ad Space</p>
-    </div>
-
     <div class="container" id="news-container">
         <div class="status-msg" id="loading-msg">লোডিং...</div>
-    </div>
-
-    <div class="ad-container">
-        <p style="color: #475569; margin: 0; font-size: 0.8rem;">Ad Space</p>
     </div>
 
     <footer>
@@ -234,7 +214,6 @@
         // ডিফল্ট ল্যাঙ্গুয়েজ নির্ধারণ
         let currentLang = localStorage.getItem('manab_lang');
         if (!currentLang) {
-            // ব্রাউজার ভাষা বাংলা হলে বাংলায়, অন্যথায় ইংরেজিতে ডিফল্ট হবে
             const browserLang = navigator.language || navigator.userLanguage;
             currentLang = browserLang.startsWith('bn') ? 'bn' : 'en';
         }
@@ -299,7 +278,6 @@
             container.innerHTML = '';
 
             allNewsData.forEach(item => {
-                // ল্যাঙ্গুয়েজ অনুযায়ী টাইটেল ও বর্ণনা ডিস্ট্রিবিউট করা
                 const title = currentLang === 'en' ? (item.title_en || item.title) : (item.title_bn || item.title);
                 const desc = currentLang === 'en' ? (item.description_en || item.description) : (item.description_bn || item.description);
                 const link = currentLang === 'en' ? (item.link_en || item.link) : (item.link_bn || item.link);
