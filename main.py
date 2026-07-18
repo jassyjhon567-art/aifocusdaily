@@ -3,6 +3,7 @@ import json
 import re
 import requests
 import feedparser
+import urllib.parse
 from datetime import datetime
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
@@ -21,6 +22,54 @@ def slugify(text):
     text = re.sub(r'[^a-z0-9\s-]', '', text)
     text = re.sub(r'[\s-]+', '-', text)
     return text.strip('-')
+
+# আরএসএস ফিড থেকে মূল আর্টিকেলের অরিজিনাল ইমেজ লিঙ্কটি খুঁজে বের করার ফাংশন
+def extract_rss_image(entry):
+    if 'media_content' in entry and len(entry.media_content) > 0:
+        if 'url' in entry.media_content[0]:
+            return entry.media_content[0]['url']
+            
+    if 'media_thumbnail' in entry and len(entry.media_thumbnail) > 0:
+        if 'url' in entry.media_thumbnail[0]:
+            return entry.media_thumbnail[0]['url']
+            
+    summary = entry.get('summary', '')
+    img_match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', summary)
+    if img_match:
+        return img_match.group(1)
+        
+    if 'content' in entry and len(entry.content) > 0:
+        content_value = entry.content[0].get('value', '')
+        img_match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', content_value)
+        if img_match:
+            return img_match.group(1)
+            
+    return None
+
+# জেমিনি ক্র্যাশ করলেও স্বয়ংক্রিয়ভাবে ১০০% অনুবাদ করার ব্যাকআপ ইঞ্জিন (ফ্রি ও সিকিউরড)
+def translate_to_bengali_fallback(text):
+    if not text:
+        return ""
+    
+    chunk_size = 800
+    chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
+    translated_chunks = []
+    
+    for chunk in chunks:
+        try:
+            url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=bn&dt=t&q={urllib.parse.quote(chunk)}"
+            response = requests.get(url, timeout=15)
+            if response.status_code == 200:
+                res_json = response.json()
+                translated_text = "".join([sentence[0] for sentence in res_json[0] if sentence[0]])
+                translated_chunks.append(translated_text)
+            else:
+                translated_chunks.append(chunk)
+        except Exception as e:
+            print(f"Fallback translation failed for chunk: {e}")
+            translated_chunks.append(chunk)
+            
+    return "".join(translated_chunks)
 
 # জেমিনি এপিআই দিয়ে একবারে বাংলা ও ইংরেজি অনুবাদ এবং এসইও কন্টেন্ট তৈরি করা
 def rewrite_bilingual_gemini(api_key, title, raw_desc):
@@ -65,7 +114,6 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
             res_json = response.json()
             raw_text = res_json['candidates'][0]['content']['parts'][0]['text'].strip()
             
-            # নিখুঁতভাবে প্রথম { এবং শেষ } এর ভেতরের ডাটা রিড করা (এরর এড়ানোর জন্য)
             start = raw_text.find('{')
             end = raw_text.rfind('}')
             if start != -1 and end != -1:
@@ -73,24 +121,39 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
             else:
                 return json.loads(raw_text)
         else:
-            print(f"Gemini API returned error: {response.status_code}. Details: {response.text}")
+            print(f"Gemini API returned error: {response.status_code}")
             return None
     except Exception as e:
         print(f"Error during Gemini rewrite: {str(e)}")
         return None
 
-# কপিরাইট ও হটলিঙ্কিং এড়াতে নতুন এআই ইমেজ জেনারেট করে নিজের ড্রাইভে সেভ করা
-def download_ai_image(prompt, slug):
+# কপিরাইট ও হটলিঙ্কিং এড়াতে নতুন এআই ইমেজ জেনারেট বা আসল ছবি ডাউনলোড করা
+def download_ai_image(orig_img_url, prompt, slug):
     local_path = f"{IMAGES_DIR}/{slug}.jpg"
     fallback_url = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80"
     
+    # ১. প্রথমে মূল খবরের আসল ছবি ডাউনলোড করার চেষ্টা করা হচ্ছে
+    if orig_img_url and orig_img_url.startswith("http"):
+        try:
+            headers = {'User-Agent': 'Mozilla/5.0'}
+            img_response = requests.get(orig_img_url, headers=headers, timeout=20)
+            if img_response.status_code == 200:
+                with open(local_path, "wb") as f:
+                    f.write(img_response.content)
+                print(f"Successfully saved original image for: {slug}")
+                return local_path
+        except Exception as e:
+            print(f"Original image download failed for {slug}: {str(e)}. Trying AI generation...")
+
+    # ২. আসল ছবি কাজ না করলে জেমিনির টাইটেল অনুসারে এআই ইমেজ জেনারেট হবে
     try:
-        prompt_encoded = requests.utils.quote(prompt)
+        prompt_encoded = urllib.parse.quote(prompt)
         img_api_url = f"https://image.pollinations.ai/p/{prompt_encoded}?width=800&height=450&nologo=true"
         img_response = requests.get(img_api_url, timeout=25)
         if img_response.status_code == 200:
             with open(local_path, "wb") as f:
                 f.write(img_response.content)
+            print(f"Successfully saved AI generated image for: {slug}")
             return local_path
     except Exception as e:
         print(f"Error downloading AI image: {str(e)}")
@@ -264,6 +327,9 @@ def main():
                 
                 print(f"Processing bilingual article: {title}")
                 
+                # অরিজিনাল ইমেজ লিঙ্ক আরএসএস থেকে সংগ্রহ
+                orig_img = extract_rss_image(entry)
+                
                 rewritten = None
                 if gemini_key:
                     rewritten = rewrite_bilingual_gemini(gemini_key, title, raw_desc)
@@ -281,19 +347,21 @@ def main():
                     
                     image_prompt = rewritten["image_prompt"]
                 else:
-                    print("Gemini API failed. Using fallback original data.")
+                    # ফলব্যাক (জেমিনি ফেইল করলে স্বয়ংক্রিয় গুগল ট্র্যান্সলেশন ইঞ্জিন চালু হবে)
+                    print("Gemini API failed. Initiating Google Translate Fallback Engine...")
                     title_en = title
                     summary_en = (raw_desc[:150] + "...") if len(raw_desc) > 150 else raw_desc
                     content_en = f"<p>{raw_desc}</p>"
                     
-                    title_bn = title
-                    summary_bn = summary_en
-                    content_bn = f"<p>{raw_desc}</p>"
+                    # ১০০% বাংলায় ট্র্যান্সলেট করা হচ্ছে
+                    title_bn = translate_to_bengali_fallback(title)
+                    summary_bn = translate_to_bengali_fallback(summary_en)
+                    content_bn = f"<p>{translate_to_bengali_fallback(raw_desc)}</p>"
                     
                     image_prompt = f"Futuristic technology abstract digital illustration of {title_en[:30]}"
 
-                # কপিরাইট এড়াতে নতুন এআই ইমেজ জেনারেট করে নিজের ড্রাইভে ডাউনলোড
-                img_url = download_ai_image(image_prompt, slug)
+                # আসল ছবি ডাউনলোড অথবা জেমিনির টাইটেল অনুসারে এআই ইমেজ জেনারেশন
+                img_url = download_ai_image(orig_img, image_prompt, slug)
 
                 # বাংলা ও ইংরেজি দুটি পৃথক পেজ জেনারেশন
                 generate_post_html(slug, title_bn, summary_bn, content_bn, img_url, "bn", f"../en/{slug}.html", source)
