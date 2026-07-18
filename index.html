@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manab AI - Daily AI Launches</title>
+    <title>Manab AI - Global AI Launches</title>
     <style>
         :root {
             --bg-color: #0d0e15;
@@ -32,6 +32,40 @@
             background: linear-gradient(180deg, rgba(21, 24, 36, 0.8) 0%, rgba(13, 14, 21, 0) 100%);
             width: 100%;
             box-sizing: border-box;
+            position: relative;
+        }
+
+        /* Language Toggle Switch Styling */
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .lang-switch:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px var(--glow-color);
+        }
+
+        .lang-btn {
+            color: var(--text-secondary);
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .lang-btn.active {
+            color: var(--accent-color);
+            text-shadow: 0 0 8px var(--glow-color);
         }
 
         h1 {
@@ -67,7 +101,6 @@
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            position: relative;
         }
 
         .card:hover {
@@ -169,23 +202,27 @@
 <body>
 
     <header>
-        <h1>Manab AI</h1>
-        <p class="subtitle">নতুন এআই রিলিজ এবং আপডেটগুলোর অটোমেটেড বাংলা প্ল্যাটফর্ম।</p>
+        <!-- Language Switcher -->
+        <div class="lang-switch" onclick="toggleLanguage()">
+            <span class="lang-btn" id="btn-en">EN</span>
+            <span style="color: rgba(255,255,255,0.2)">|</span>
+            <span class="lang-btn" id="btn-bn">BN</span>
+        </div>
+
+        <h1 id="main-title">Manab AI</h1>
+        <p class="subtitle" id="main-subtitle">নতুন এআই রিলিজ এবং আপডেটগুলোর অটোমেটেড বাংলা প্ল্যাটফর্ম।</p>
     </header>
 
-    <!-- Adsterra Top Advertisement Banner -->
+    <!-- Adsterra Ad -->
     <div class="ad-container">
-        <!-- Replace this with your Adsterra Banner Code -->
         <p style="color: #475569; margin: 0; font-size: 0.8rem;">Ad Space</p>
     </div>
 
     <div class="container" id="news-container">
-        <div class="status-msg">সর্বশেষ আপডেটগুলো লোড করা হচ্ছে...</div>
+        <div class="status-msg" id="loading-msg">লোডিং...</div>
     </div>
 
-    <!-- Adsterra Bottom Advertisement Banner -->
     <div class="ad-container">
-        <!-- Replace this with your Adsterra Banner Code -->
         <p style="color: #475569; margin: 0; font-size: 0.8rem;">Ad Space</p>
     </div>
 
@@ -194,45 +231,97 @@
     </footer>
 
     <script>
+        // ডিফল্ট ল্যাঙ্গুয়েজ নির্ধারণ
+        let currentLang = localStorage.getItem('manab_lang');
+        if (!currentLang) {
+            // ব্রাউজার ভাষা বাংলা হলে বাংলায়, অন্যথায় ইংরেজিতে ডিফল্ট হবে
+            const browserLang = navigator.language || navigator.userLanguage;
+            currentLang = browserLang.startsWith('bn') ? 'bn' : 'en';
+        }
+
+        let allNewsData = [];
+
+        const translations = {
+            bn: {
+                subtitle: "আপনার দৈনন্দিন জীবনে সাহায্য করতে নতুন এআই রিলিজ এবং আপডেটগুলোর অটোমেটেড প্ল্যাটফর্ম।",
+                loading: "সর্বশেষ এআই আপডেটগুলো লোড করা হচ্ছে...",
+                error: "দুঃখিত, খবর লোড করতে সমস্যা হচ্ছে।",
+                noNews: "আপাতত নতুন কোনো আপডেট পাওয়া যায়নি।",
+                readMore: "পড়ুন &rarr;"
+            },
+            en: {
+                subtitle: "Automated platform tracking the latest AI releases and launches to empower your daily life.",
+                loading: "Loading the latest AI updates...",
+                error: "Sorry, there was a problem loading the news.",
+                noNews: "No new updates found at the moment.",
+                readMore: "Read More &rarr;"
+            }
+        };
+
+        function updateUIStrings() {
+            document.getElementById('main-subtitle').innerText = translations[currentLang].subtitle;
+            document.getElementById('btn-en').className = currentLang === 'en' ? 'lang-btn active' : 'lang-btn';
+            document.getElementById('btn-bn').className = currentLang === 'bn' ? 'lang-btn active' : 'lang-btn';
+        }
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'bn' : 'en';
+            localStorage.setItem('manab_lang', currentLang);
+            updateUIStrings();
+            renderNews();
+        }
+
         async function fetchNews() {
             const container = document.getElementById('news-container');
             try {
+                updateUIStrings();
+                document.getElementById('loading-msg').innerText = translations[currentLang].loading;
+
                 const response = await fetch(`news.json?t=${new Date().getTime()}`);
                 if (!response.ok) {
                     throw new Error('Database loading failed.');
                 }
-                const news = await response.json();
-                
-                if (news.length === 0) {
-                    container.innerHTML = '<div class="status-msg">আপাতত নতুন কোনো আপডেট পাওয়া যায়নি।</div>';
-                    return;
-                }
-
-                container.innerHTML = '';
-
-                news.forEach(item => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <img src="${item.image}" alt="${item.title}" onerror="this.src='https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80'">
-                        <div class="card-content">
-                            <span class="badge">${item.source}</span>
-                            <h2 class="card-title">
-                                <a href="${item.link}">${item.title}</a>
-                            </h2>
-                            <p class="card-desc">${item.description || 'বিস্তারিত পড়তে লিঙ্কে ক্লিক করুন।'}</p>
-                            <div class="card-footer">
-                                <span>${item.published}</span>
-                                <span>পড়ুন &rarr;</span>
-                            </div>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
+                allNewsData = await response.json();
+                renderNews();
             } catch (error) {
                 console.error(error);
-                container.innerHTML = '<div class="status-msg">দুঃখিত, খবর লোড করতে সমস্যা হচ্ছে।</div>';
+                container.innerHTML = `<div class="status-msg">${translations[currentLang].error}</div>`;
             }
+        }
+
+        function renderNews() {
+            const container = document.getElementById('news-container');
+            if (allNewsData.length === 0) {
+                container.innerHTML = `<div class="status-msg">${translations[currentLang].noNews}</div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+
+            allNewsData.forEach(item => {
+                // ল্যাঙ্গুয়েজ অনুযায়ী টাইটেল ও বর্ণনা ডিস্ট্রিবিউট করা
+                const title = currentLang === 'en' ? (item.title_en || item.title) : (item.title_bn || item.title);
+                const desc = currentLang === 'en' ? (item.description_en || item.description) : (item.description_bn || item.description);
+                const link = currentLang === 'en' ? (item.link_en || item.link) : (item.link_bn || item.link);
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${item.image}" alt="${title}" onerror="this.src='https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80'">
+                    <div class="card-content">
+                        <span class="badge">${item.source}</span>
+                        <h2 class="card-title">
+                            <a href="${link}">${title}</a>
+                        </h2>
+                        <p class="card-desc">${desc || ''}</p>
+                        <div class="card-footer">
+                            <span>${item.published}</span>
+                            <span>${translations[currentLang].readMore}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
         fetchNews();
