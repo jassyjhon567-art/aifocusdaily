@@ -169,6 +169,20 @@
             padding-top: 1rem;
         }
 
+        /* Read More Button Link style */
+        .read-more-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .read-more-link:hover {
+            text-shadow: 0 0 8px var(--glow-color);
+            text-decoration: underline;
+        }
+
         .status-msg {
             grid-column: 1 / -1;
             text-align: center;
@@ -294,7 +308,7 @@
                         <p class="card-desc">${desc || ''}</p>
                         <div class="card-footer">
                             <span>${item.published}</span>
-                            <span>${translations[currentLang].readMore}</span>
+                            <a href="${link}" class="read-more-link">${translations[currentLang].readMore}</a>
                         </div>
                     </div>
                 `;
