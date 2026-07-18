@@ -3,7 +3,7 @@ import json
 import re
 import requests
 import feedparser
-import urllib.parse
+import urllib.parse  # বাগমুক্ত ইমপোর্ট
 from datetime import datetime
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
@@ -38,15 +38,9 @@ def extract_rss_image(entry):
     if img_match:
         return img_match.group(1)
         
-    if 'content' in entry and len(entry.content) > 0:
-        content_value = entry.content[0].get('value', '')
-        img_match = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', content_value)
-        if img_match:
-            return img_match.group(1)
-            
     return None
 
-# জেমিনি ক্র্যাশ করলেও স্বয়ংক্রিয়ভাবে ১০০% অনুবাদ করার ব্যাকআপ ইঞ্জিন
+# MyMemory translation API (গিটহাব রানার থেকে ১০০% সচল)
 def translate_to_bengali_fallback(text):
     if not text:
         return ""
@@ -57,8 +51,21 @@ def translate_to_bengali_fallback(text):
             res_json = response.json()
             return res_json["responseData"]["translatedText"]
     except Exception as e:
-        print(f"MyMemory translation fallback failed: {e}")
+        print(f"MyMemory translation failed: {e}")
     return text
+
+# প্রতিটি প্যারাগ্রাফ ধরে ধরে হুবহু বড় বাংলা নিউজ জেনারেট করার ফলব্যাক ফাংশন
+def translate_full_content_bn(text):
+    if not text:
+        return ""
+    paragraphs = text.split("</p>")
+    translated_paragraphs = []
+    for p in paragraphs:
+        p_clean = p.replace("<p>", "").strip()
+        if p_clean:
+            translated_p = translate_to_bengali_fallback(p_clean)
+            translated_paragraphs.append(f"<p>{translated_p}</p>")
+    return "".join(translated_paragraphs)
 
 # জেমিনি এপিআই দিয়ে একবারে বাংলা ও ইংরেজি অনুবাদ এবং বিস্তারিত কন্টেন্ট তৈরি করা
 def rewrite_bilingual_gemini(api_key, title, raw_desc):
@@ -71,11 +78,10 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
     Original Title: {title}
     Original Content Summary: {raw_desc}
 
-    Since the input content summary might be short, you MUST EXPAND it into a fully comprehensive, highly detailed, and informative 3-paragraph news article of about 200-250 words for each language version. 
-    Use your knowledge about the tech industry to explain the background of the company, what this launch means, and why it is important for developers and businesses.
+    Since the input content summary might be short, you MUST EXPAND it into a fully comprehensive, highly detailed, and informative 3-paragraph news article of about 200-250 words for each language version. Do not summarize. The Bengali and English versions must be equally detailed.
+    Use your knowledge about the tech industry to explain the background of the company, what this launch means, and why it is important for developers and businesses. Make the title and content extremely engaging, SEO-optimized, and compelling.
     
-    Translate and write the output in both highly engaging Bengali (Bangla) and professional English.
-    Also, write a highly descriptive English image prompt (max 15 words) to generate a unique high-tech illustration related to this news.
+    Also, write a highly descriptive English image prompt (max 15 words) to generate a realistic, high-resolution news photograph related to this news. Avoid abstract art.
 
     Provide the output STRICTLY in the following JSON format:
     {{
@@ -85,7 +91,7 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
         "seo_title_bn": "Catchy, SEO-optimized Bengali title",
         "seo_summary_bn": "A 150-character SEO meta description in Bengali",
         "seo_content_bn": "Full expanded, highly-detailed rewritten article in Bengali. Wrap paragraphs in HTML <p> tags. Add a section 'কেন এটি গুরুত্বপূর্ণ' as <h3>.",
-        "image_prompt": "Futuristic digital art of AI technology relevant to this article"
+        "image_prompt": "Realistic news photograph of [key element], high resolution, 16:9 aspect ratio"
     }}
     """
     
@@ -119,7 +125,7 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
         print(f"Error during Gemini rewrite: {str(e)}")
         return None
 
-# স্বয়ংক্রিয় এআই ব্যাকআপ ইমেজ জেনারেটর (যদি কোনো খবরের অরিজিনাল ছবি না থাকে)
+# টাইটেল অনুসারে বাস্তবধর্মী এআই ইমেজ জেনারেট করে নিজের ড্রাইভে ডাউনলোড
 def download_ai_image(prompt, slug):
     local_path = f"{IMAGES_DIR}/{slug}.jpg"
     fallback_url = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80"
@@ -136,7 +142,7 @@ def download_ai_image(prompt, slug):
     return fallback_url
 
 # বাংলা ও ইংরেজি পৃথক এসইও স্ট্যাটিক পেজ জেনারেট করা
-def generate_post_html(slug, title, summary, content, img_path, lang, other_lang_url, source):
+def generate_post_html(slug, title, summary, content, img_path, lang, other_lang_url, source, original_date):
     lang_dir = os.path.join(POSTS_DIR, lang)
     os.makedirs(lang_dir, exist_ok=True)
     file_path = os.path.join(lang_dir, f"{slug}.html")
@@ -149,7 +155,6 @@ def generate_post_html(slug, title, summary, content, img_path, lang, other_lang
     published_by = "প্রকাশিত" if lang == "bn" else "Published"
     source_label = "সূত্র" if lang == "bn" else "Source"
 
-    # ইমেজ লিঙ্কের পাথ ঠিক করা
     display_img_path = img_path
     if not img_path.startswith("http"):
         display_img_path = f"../../{img_path}"
@@ -251,11 +256,10 @@ def generate_post_html(slug, title, summary, content, img_path, lang, other_lang
             <a href="../../" class="btn">&larr; {back_text}</a>
             <a href="{other_lang_url}" class="btn">{read_other_lang} &rarr;</a>
         </div>
-        <!-- 'referrerpolicy' যুক্ত করার কারণে ভেনচারবিট বা টেকক্রাঞ্চের আসল ছবি সরাসরি লোড হবে -->
         <img src="{display_img_path}" alt="{title}" referrerpolicy="no-referrer" onerror="this.src='https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80'">
         <h1>{title}</h1>
         <div class="meta">
-            <span>{published_by}: {datetime.now().strftime("%Y-%m-%d")} | {source_label}: {source}</span>
+            <span>{published_by}: {original_date} | {source_label}: {source}</span>
         </div>
         <div class="content">
             {content}
@@ -300,6 +304,7 @@ def main():
 
                 title = entry.get('title', 'No Title')
                 raw_desc = re.sub('<[^<]+?>', '', entry.get('summary', ''))
+                original_date = entry.get('published', datetime.now().strftime("%Y-%m-%d"))
                 
                 print(f"Processing bilingual article: {title}")
                 
@@ -328,23 +333,19 @@ def main():
                     summary_en = (raw_desc[:150] + "...") if len(raw_desc) > 150 else raw_desc
                     content_en = f"<p>{raw_desc}</p>"
                     
-                    # বাংলায় অনুবাদ করা হচ্ছে
+                    # বাংলায় অনুবাদ করা হচ্ছে (প্যারাগ্রাফ ধরে বড় অনুবাদ)
                     title_bn = translate_to_bengali_fallback(title)
                     summary_bn = translate_to_bengali_fallback(summary_en)
-                    content_bn = f"<p>{translate_to_bengali_fallback(raw_desc)}</p>"
+                    content_bn = translate_full_content_bn(content_en)
                     
                     image_prompt = f"Futuristic technology abstract digital illustration of {title_en[:30]}"
 
-                # সোর্সে অরিজিনাল ছবি থাকলে সেটিই সরাসরি ব্যবহার হবে (কোনো ডাউনলোড ঝক্কি ছাড়াই)
-                # অন্যথায় স্বয়ংক্রিয়ভাবে এআই দিয়ে ব্যাকআপ ছবি তৈরি হবে
-                if orig_img:
-                    img_url = orig_img
-                else:
-                    img_url = download_ai_image(image_prompt, slug)
+                # কপিরাইট এড়াতে নতুন এআই ইমেজ জেনারেট করে নিজের ড্রাইভে ডাউনলোড
+                img_url = download_ai_image(image_prompt, slug)
 
                 # বাংলা ও ইংরেজি দুটি পৃথক পেজ জেনারেশন
-                generate_post_html(slug, title_bn, summary_bn, content_bn, img_url, "bn", f"../en/{slug}.html", source)
-                generate_post_html(slug, title_en, summary_en, content_en, img_url, "en", f"../bn/{slug}.html", source)
+                generate_post_html(slug, title_bn, summary_bn, content_bn, img_url, "bn", f"../en/{slug}.html", source, original_date)
+                generate_post_html(slug, title_en, summary_en, content_en, img_url, "en", f"../bn/{slug}.html", source, original_date)
                 
                 existing_news.insert(0, {
                     "title_en": title_en,
@@ -352,7 +353,7 @@ def main():
                     "link_en": f"posts/en/{slug}.html",
                     "link_bn": f"posts/bn/{slug}.html",
                     "original_link": orig_link,
-                    "published": datetime.now().strftime("%Y-%m-%d"),
+                    "published": original_date,
                     "source": source,
                     "image": img_url,
                     "description_en": summary_en,
