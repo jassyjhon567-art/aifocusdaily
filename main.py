@@ -1,17 +1,28 @@
 import os
 import json
 import re
+import time
 import requests
 import feedparser
-import urllib.parse  # বাগমুক্ত ইমপোর্ট
+import urllib.parse
 from datetime import datetime
 from google.oauth2 import service_account
 from google.auth.transport.requests import AuthorizedSession
 
+# ১০টি বিশ্বস্ত এবং বৈচিত্র্যময় গ্লোবাল সোর্স (ভবিষ্যতে আরো সহজে যুক্ত করা যাবে)
 FEEDS = {
     "TechCrunch AI": "https://techcrunch.com/category/artificial-intelligence/feed/",
-    "VentureBeat AI": "https://venturebeat.com/category/ai/feed/"
+    "VentureBeat AI": "https://venturebeat.com/category/ai/feed/",
+    "Wired Technology": "https://www.wired.com/feed/category/gear/latest/rss",
+    "The Verge Tech": "https://www.theverge.com/rss/index.xml",
+    "Mashable Tech": "https://mashable.com/feeds/rss/technology",
+    "Engadget News": "https://www.engadget.com/rss.xml",
+    "MIT Tech Review": "https://www.technologyreview.com/feed/",
+    "ReadWrite AI": "https://readwrite.com/feed/",
+    "MakeUseOf Guides": "https://www.makeuseof.com/feed/",
+    "Google News Tech": "https://news.google.com/rss/search?q=technology&hl=en-US&gl=US&ceid=US:en"
 }
+
 MAX_NEWS = 50
 NEWS_FILE = "news.json"
 POSTS_DIR = "posts"
@@ -22,6 +33,16 @@ def slugify(text):
     text = re.sub(r'[^a-z0-9\s-]', '', text)
     text = re.sub(r'[\s-]+', '-', text)
     return text.strip('-')
+
+# একাধিক সোর্সের খবরগুলোর মধ্যে ডুপ্লিকেট নিউজ এড়ানোর অ্যালগরিদম
+def is_duplicate(title1, title2):
+    words1 = set(re.sub(r'[^a-z0-9\s]', '', title1.lower()).split())
+    words2 = set(re.sub(r'[^a-z0-9\s]', '', title2.lower()).split())
+    if not words1 or not words2:
+        return False
+    overlap = words1.intersection(words2)
+    ratio = len(overlap) / min(len(words1), len(words2))
+    return ratio > 0.5  # ৫০% এর বেশি শব্দের মিল থাকলে ডুপ্লিকেট হিসেবে বাদ যাবে
 
 # আরএসএস ফিড থেকে মূল আর্টিকেলের অরিজিনাল ইমেজ লিঙ্কটি খুঁজে বের করার ফাংশন
 def extract_rss_image(entry):
@@ -40,7 +61,7 @@ def extract_rss_image(entry):
         
     return None
 
-# MyMemory translation API (গিটহাব রানার থেকে ১০০% সচল)
+# MyMemory translation API (প্যারাগ্রাফ বাই প্যারাগ্রাফ অনুবাদের জন্য)
 def translate_to_bengali_fallback(text):
     if not text:
         return ""
@@ -54,7 +75,7 @@ def translate_to_bengali_fallback(text):
         print(f"MyMemory translation failed: {e}")
     return text
 
-# প্রতিটি প্যারাগ্রাফ ধরে ধরে হুবহু বড় বাংলা নিউজ জেনারেট করার ফলব্যাক ফাংশন
+# ইংরেজি আর্টিকেলের প্রতিটি প্যারাগ্রাফকে সমমানের বড় বাংলায় অনুবাদ করার ফাংশন
 def translate_full_content_bn(text):
     if not text:
         return ""
@@ -73,15 +94,15 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
     headers = {'Content-Type': 'application/json'}
     
     prompt = f"""
-    You are an expert bilingual SEO content writer and tech journalist. Optimize the following AI news in both highly engaging Bengali (Bangla) and professional English.
+    You are an expert bilingual SEO content writer and tech journalist. Optimize the following AI or tech news in both highly engaging Bengali (Bangla) and professional English.
     
     Original Title: {title}
     Original Content Summary: {raw_desc}
 
-    Since the input content summary might be short, you MUST EXPAND it into a fully comprehensive, highly detailed, and informative 3-paragraph news article of about 200-250 words for each language version. Do not summarize. The Bengali and English versions must be equally detailed.
+    Since the input content summary might be short, you MUST EXPAND it into a fully comprehensive, highly detailed, and informative 3-paragraph news article of about 250-300 words for each language version. Do not summarize or make it short. The Bengali and English versions must be equally detailed, paragraph-by-paragraph.
     Use your knowledge about the tech industry to explain the background of the company, what this launch means, and why it is important for developers and businesses. Make the title and content extremely engaging, SEO-optimized, and compelling.
     
-    Also, write a highly descriptive English image prompt (max 15 words) to generate a realistic, high-resolution news photograph related to this news. Avoid abstract art.
+    Write a highly descriptive English image prompt (max 15 words) to generate a professional, highly realistic news photograph related to this news. Avoid abstract art.
 
     Provide the output STRICTLY in the following JSON format:
     {{
@@ -91,7 +112,7 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
         "seo_title_bn": "Catchy, SEO-optimized Bengali title",
         "seo_summary_bn": "A 150-character SEO meta description in Bengali",
         "seo_content_bn": "Full expanded, highly-detailed rewritten article in Bengali. Wrap paragraphs in HTML <p> tags. Add a section 'কেন এটি গুরুত্বপূর্ণ' as <h3>.",
-        "image_prompt": "Realistic news photograph of [key element], high resolution, 16:9 aspect ratio"
+        "image_prompt": "A professional realistic news photograph of [key element], 16:9 aspect ratio, high resolution"
     }}
     """
     
@@ -125,7 +146,7 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
         print(f"Error during Gemini rewrite: {str(e)}")
         return None
 
-# টাইটেল অনুসারে বাস্তবধর্মী এআই ইমেজ জেনারেট করে নিজের ড্রাইভে ডাউনলোড
+# এআই বা কোড দ্বারা ছবি ডাউনলোড ও ম্যাচিং করার ফাংশন
 def download_ai_image(prompt, slug):
     local_path = f"{IMAGES_DIR}/{slug}.jpg"
     fallback_url = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80"
@@ -292,77 +313,100 @@ def main():
     os.makedirs(os.path.join(POSTS_DIR, "bn"), exist_ok=True)
     os.makedirs(os.path.join(POSTS_DIR, "en"), exist_ok=True)
 
+    # সব সোর্স থেকে খবরের ডেটা স্ক্যান
+    raw_feed_entries = []
     for source, url in FEEDS.items():
         try:
             response = requests.get(url, headers=headers, timeout=15)
             feed = feedparser.parse(response.content)
-            
             for entry in feed.entries:
-                orig_link = entry.get('link', '')
-                if orig_link in existing_links:
-                    continue 
+                raw_feed_entries.append((entry, source))
+        except Exception as e:
+            print(f"Error reading source {source}: {e}")
 
-                title = entry.get('title', 'No Title')
-                raw_desc = re.sub('<[^<]+?>', '', entry.get('summary', ''))
-                original_date = entry.get('published', datetime.now().strftime("%Y-%m-%d"))
-                
-                print(f"Processing bilingual article: {title}")
-                
-                # আরএসএস ফিড থেকে মূল আর্টিকেলের অরিজিনাল ইমেজ লিঙ্ক সংগ্রহ
-                orig_img = extract_rss_image(entry)
-                
-                rewritten = None
-                if gemini_key:
-                    rewritten = rewrite_bilingual_gemini(gemini_key, title, raw_desc)
-                
-                slug = slugify(title[:50])
-                
-                if rewritten:
-                    title_en = rewritten["seo_title_en"]
-                    summary_en = rewritten["seo_summary_en"]
-                    content_en = rewritten["seo_content_en"]
-                    
-                    title_bn = rewritten["seo_title_bn"]
-                    summary_bn = rewritten["seo_summary_bn"]
-                    content_bn = rewritten["seo_content_bn"]
-                    
-                    image_prompt = rewritten["image_prompt"]
-                else:
-                    print("Gemini API failed. Initiating Google Translate Fallback Engine...")
-                    title_en = title
-                    summary_en = (raw_desc[:150] + "...") if len(raw_desc) > 150 else raw_desc
-                    content_en = f"<p>{raw_desc}</p>"
-                    
-                    # বাংলায় অনুবাদ করা হচ্ছে (প্যারাগ্রাফ ধরে বড় অনুবাদ)
-                    title_bn = translate_to_bengali_fallback(title)
-                    summary_bn = translate_to_bengali_fallback(summary_en)
-                    content_bn = translate_full_content_bn(content_en)
-                    
-                    image_prompt = f"Futuristic technology abstract digital illustration of {title_en[:30]}"
+    # ডুপ্লিকেট নিউজ এড়ানো এবং সবচেয়ে ভালো সোর্স নির্বাচন করা
+    unique_entries = []
+    for entry, source in raw_feed_entries:
+        orig_link = entry.get('link', '')
+        if orig_link in existing_links:
+            continue
+            
+        is_dup = False
+        for u_entry, u_source in unique_entries:
+            if is_duplicate(entry.get('title', ''), u_entry.get('title', '')):
+                is_dup = True
+                break
+        if not is_dup:
+            unique_entries.append((entry, source))
 
-                # কপিরাইট এড়াতে নতুন এআই ইমেজ জেনারেট করে নিজের ড্রাইভে ডাউনলোড
+    # প্রতি রানে সর্বোচ্চ ৫টি নতুন খবর রিরাইট করা হবে (এপিআই রিকোয়েস্ট লিমিট ঠিক রাখতে)
+    for entry, source in unique_entries[:5]:
+        try:
+            title = entry.get('title', 'No Title')
+            raw_desc = re.sub('<[^<]+?>', '', entry.get('summary', ''))
+            original_date = entry.get('published', datetime.now().strftime("%Y-%m-%d"))
+            orig_link = entry.get('link', '')
+            
+            print(f"Processing: {title} (Source: {source})")
+            
+            # আরএসএস থেকে অরিজিনাল ছবি
+            orig_img = extract_rss_image(entry)
+            
+            rewritten = None
+            if gemini_key:
+                rewritten = rewrite_bilingual_gemini(gemini_key, title, raw_desc)
+            
+            slug = slugify(title[:50])
+            
+            if rewritten:
+                title_en = rewritten["seo_title_en"]
+                summary_en = rewritten["seo_summary_en"]
+                content_en = rewritten["seo_content_en"]
+                
+                title_bn = rewritten["seo_title_bn"]
+                summary_bn = rewritten["seo_summary_bn"]
+                content_bn = rewritten["seo_content_bn"]
+                
+                image_prompt = rewritten["image_prompt"]
+            else:
+                print("Gemini API failed. Initiating MyMemory Fallback Engine...")
+                title_en = title
+                summary_en = (raw_desc[:150] + "...") if len(raw_desc) > 150 else raw_desc
+                content_en = f"<p>{raw_desc}</p>"
+                
+                # বাংলায় প্যারাগ্রাফ বাই প্যারাগ্রাফ অনুবাদ
+                title_bn = translate_to_bengali_fallback(title)
+                summary_bn = translate_to_bengali_fallback(summary_en)
+                content_bn = translate_full_content_bn(content_en)
+                
+                image_prompt = f"Professional realistic news photograph of {title_en[:30]}"
+
+            # অরিজিনাল ইমেজ লিঙ্ক থাকলে সেটি ব্যবহার, অন্যথায় বাস্তবধর্মী এআই ইমেজ জেনারেশন
+            if orig_img:
+                img_url = orig_img
+            else:
                 img_url = download_ai_image(image_prompt, slug)
 
-                # বাংলা ও ইংরেজি দুটি পৃথক পেজ জেনারেশন
-                generate_post_html(slug, title_bn, summary_bn, content_bn, img_url, "bn", f"../en/{slug}.html", source, original_date)
-                generate_post_html(slug, title_en, summary_en, content_en, img_url, "en", f"../bn/{slug}.html", source, original_date)
-                
-                existing_news.insert(0, {
-                    "title_en": title_en,
-                    "title_bn": title_bn,
-                    "link_en": f"posts/en/{slug}.html",
-                    "link_bn": f"posts/bn/{slug}.html",
-                    "original_link": orig_link,
-                    "published": original_date,
-                    "source": source,
-                    "image": img_url,
-                    "description_en": summary_en,
-                    "description_bn": summary_bn
-                })
-                new_articles_count += 1
-                
+            # বাংলা ও ইংরেজি পৃথক পেজ জেনারেশন
+            generate_post_html(slug, title_bn, summary_bn, content_bn, img_url, "bn", f"../en/{slug}.html", source, original_date)
+            generate_post_html(slug, title_en, summary_en, content_en, img_url, "en", f"../bn/{slug}.html", source, original_date)
+            
+            existing_news.insert(0, {
+                "title_en": title_en,
+                "title_bn": title_bn,
+                "link_en": f"posts/en/{slug}.html",
+                "link_bn": f"posts/bn/{slug}.html",
+                "original_link": orig_link,
+                "published": original_date,
+                "source": source,
+                "image": img_url,
+                "description_en": summary_en,
+                "description_bn": summary_bn
+            })
+            new_articles_count += 1
+            
         except Exception as e:
-            print(f"Error processing feed {source}: {str(e)}")
+            print(f"Error processing article: {str(e)}")
 
     if not existing_news:
         existing_news.append({
@@ -384,29 +428,47 @@ def main():
     print(f"Database updated. Total articles: {len(existing_news)}")
     
     if new_articles_count > 0:
-        submit_to_google_indexing()
+        # সফলভাবে জেনারেট হওয়া পেজগুলোর ডায়নামিক লিঙ্ক ইনডেক্স করা
+        repo_full = os.environ.get("GITHUB_REPOSITORY", "")
+        if repo_full and "/" in repo_full:
+            owner, repo = repo_full.split("/")
+            base_url = f"https://{owner}.github.io/" if repo.lower() == f"{owner.lower()}.github.io" else f"https://{owner}.github.io/{repo}/"
+            # মেইন পেজ ইনডেক্সিং
+            submit_to_google_indexing_with_retry(base_url)
 
-def submit_to_google_indexing():
-    repo_full = os.environ.get("GITHUB_REPOSITORY", "")
-    if not repo_full or "/" not in repo_full:
-        return
-    owner, repo = repo_full.split("/")
-    target_url = f"https://{owner}.github.io/" if repo.lower() == f"{owner.lower()}.github.io" else f"https://{owner}.github.io/{repo}/"
+# গুগল ক্লাউড এপিআই ইনডেক্সিং রিকোয়েস্ট উইথ রিট্রাই কিউ (Retry Queue System)
+def submit_to_google_indexing_with_retry(target_url):
     gcloud_key = os.environ.get("GCLOUD_KEY")
     if not gcloud_key:
+        print("GCLOUD_KEY secret not found. Skipping Google Indexing.")
         return
-    try:
-        info = json.loads(gcloud_key)
-        credentials = service_account.Credentials.from_service_account_info(
-            info,
-            scopes=["https://www.googleapis.com/auth/indexing"]
-        )
-        session = AuthorizedSession(credentials)
-        endpoint = "https://indexing.googleapis.com/v3/urlNotifications:publish"
-        session.post(endpoint, json={"url": target_url, "type": "URL_UPDATED"})
-        print("Google Indexing API successfully notified.")
-    except Exception as e:
-        print(f"Indexing API error: {str(e)}")
+        
+    print(f"Submitting Indexing Request for: {target_url}")
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            info = json.loads(gcloud_key)
+            credentials = service_account.Credentials.from_service_account_info(
+                info,
+                scopes=["https://www.googleapis.com/auth/indexing"]
+            )
+            session = AuthorizedSession(credentials)
+            endpoint = "https://indexing.googleapis.com/v3/urlNotifications:publish"
+            data = {
+                "url": target_url,
+                "type": "URL_UPDATED"
+            }
+            response = session.post(endpoint, json=data, timeout=20)
+            if response.status_code == 200:
+                print(f"Google Indexing API Success (Attempt {attempt+1}): {response.text}")
+                return True
+            else:
+                print(f"Google Indexing API returned status {response.status_code} on attempt {attempt+1}. Retrying...")
+        except Exception as e:
+            print(f"Error calling Google Indexing API on attempt {attempt+1}: {str(e)}")
+        time.sleep(2)
+    print("Failed to notify Google Indexing after all attempts.")
+    return False
 
 if __name__ == "__main__":
     main()
