@@ -46,7 +46,6 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
         "seo_content_bn": "Full rewritten article in Bengali. Wrap paragraphs in HTML <p> tags. Add a section 'কেন এটি গুরুত্বপূর্ণ' as <h3>.",
         "image_prompt": "Futuristic digital art of AI technology relevant to this article"
     }}
-    Ensure your output is valid JSON. Do not wrap in markdown codeblocks like ```json.
     """
     
     data = {
@@ -54,18 +53,27 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
             "parts": [{
                 "text": prompt
             }]
-        }]
+        }],
+        "generationConfig": {
+            "responseMimeType": "application/json"
+        }
     }
     
     try:
         response = requests.post(url, headers=headers, json=data, timeout=30)
         if response.status_code == 200:
             res_json = response.json()
-            raw_text = res_json['candidates'][0]['content']['parts'][0]['text']
-            raw_text = raw_text.replace("```json", "").replace("```", "").strip()
-            return json.loads(raw_text)
+            raw_text = res_json['candidates'][0]['content']['parts'][0]['text'].strip()
+            
+            # নিখুঁতভাবে প্রথম { এবং শেষ } এর ভেতরের ডাটা রিড করা (এরর এড়ানোর জন্য)
+            start = raw_text.find('{')
+            end = raw_text.rfind('}')
+            if start != -1 and end != -1:
+                return json.loads(raw_text[start:end+1])
+            else:
+                return json.loads(raw_text)
         else:
-            print(f"Gemini API returned error: {response.status_code}")
+            print(f"Gemini API returned error: {response.status_code}. Details: {response.text}")
             return None
     except Exception as e:
         print(f"Error during Gemini rewrite: {str(e)}")
@@ -74,7 +82,6 @@ def rewrite_bilingual_gemini(api_key, title, raw_desc):
 # কপিরাইট ও হটলিঙ্কিং এড়াতে নতুন এআই ইমেজ জেনারেট করে নিজের ড্রাইভে সেভ করা
 def download_ai_image(prompt, slug):
     local_path = f"{IMAGES_DIR}/{slug}.jpg"
-    # কোনো কারণে ডাউনলোড ফেইল করলে ব্যাকআপ হিসেবে ব্যবহারের জন্য একটি সুন্দর কপিরাইট-মুক্ত টেক ইমেজ
     fallback_url = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80"
     
     try:
@@ -91,7 +98,7 @@ def download_ai_image(prompt, slug):
     return fallback_url
 
 # বাংলা ও ইংরেজি পৃথক এসইও স্ট্যাটিক পেজ জেনারেট করা
-def generate_post_html(slug, title, summary, content, img_path, lang, other_lang_url):
+def generate_post_html(slug, title, summary, content, img_path, lang, other_lang_url, source):
     lang_dir = os.path.join(POSTS_DIR, lang)
     os.makedirs(lang_dir, exist_ok=True)
     file_path = os.path.join(lang_dir, f"{slug}.html")
@@ -102,7 +109,12 @@ def generate_post_html(slug, title, summary, content, img_path, lang, other_lang
     back_text = "হোমে ফিরে যান" if lang == "bn" else "Back to Home"
     read_other_lang = "ইংরেজিতে পড়ুন" if lang == "bn" else "Read in Bengali"
     published_by = "প্রকাশিত" if lang == "bn" else "Published"
-    powered_by = "অটোমেশন" if lang == "bn" else "Automation"
+    source_label = "সূত্র" if lang == "bn" else "Source"
+
+    # ইমেজ লিঙ্কের পাথ ঠিক করা (লোকাল ফাইল হলে ডাবল-ব্যাক স্লাশ হবে, বাহ্যিক হলে ইউআরএল ডিরেক্ট বসবে)
+    display_img_path = img_path
+    if not img_path.startswith("http"):
+        display_img_path = f"../../{img_path}"
 
     html_content = f"""<!DOCTYPE html>
 <html lang="{lang}">
@@ -117,16 +129,77 @@ def generate_post_html(slug, title, summary, content, img_path, lang, other_lang
 
     <meta property="og:title" content="{title}">
     <meta property="og:description" content="{summary}">
-    <meta property="og:image" content="../../{img_path}">
+    <meta property="og:image" content="{display_img_path}">
     <meta property="og:type" content="article">
 
     <style>
-        body {{ background-color: #0d0e15; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; }}
-        .container {{ max-width: 800px; width: 90%; margin: 3rem auto; background-color: #151824; padding: 2.5rem; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.05); box-shadow: 0 10px 30px rgba(0, 242, 254, 0.15); }}
-        img {{ width: 100%; height: auto; border-radius: 12px; margin-bottom: 2rem; border: 1px solid rgba(255, 255, 255, 0.05); }}
-        h1 {{ font-size: 2.2rem; color: #00f2fe; line-height: 1.4; margin-bottom: 1.5rem; }}
-        .meta {{ color: #94a3b8; font-size: 0.9rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem; display: flex; justify-content: space-between; }}
-        .content {{ font-size: 1.1rem; line-height: 1.8; color: #e2e8f0; }}
+        * {{
+            box-sizing: border-box;
+        }}
+        body {{ 
+            background-color: #0d0e15; 
+            color: #ffffff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }}
+        .container {{ 
+            max-width: 800px; 
+            width: 95%; 
+            margin: 1.5rem auto; 
+            background-color: #151824; 
+            padding: 1.5rem; 
+            border-radius: 16px; 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            box-shadow: 0 10px 30px rgba(0, 242, 254, 0.15); 
+        }}
+        @media (min-width: 768px) {{
+            .container {{
+                width: 90%;
+                margin: 3rem auto;
+                padding: 2.5rem;
+            }}
+        }}
+        img {{ 
+            width: 100%; 
+            height: auto; 
+            border-radius: 12px; 
+            margin-bottom: 2rem; 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+        }}
+        h1 {{ 
+            font-size: 1.8rem; 
+            color: #00f2fe; 
+            line-height: 1.4; 
+            margin-bottom: 1.5rem; 
+        }}
+        @media (min-width: 768px) {{
+            h1 {{
+                font-size: 2.2rem;
+            }}
+        }}
+        .meta {{ 
+            color: #94a3b8; 
+            font-size: 0.9rem; 
+            margin-bottom: 2rem; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+            padding-bottom: 1rem; 
+            display: flex; 
+            justify-content: space-between; 
+        }}
+        .content {{ 
+            font-size: 1.05rem; 
+            line-height: 1.8; 
+            color: #e2e8f0; 
+        }}
+        @media (min-width: 768px) {{
+            .content {{
+                font-size: 1.1rem;
+            }}
+        }}
         .content p {{ margin-bottom: 1.5rem; }}
         .content h3 {{ color: #00f2fe; margin-top: 2rem; }}
         .nav-links {{ display: flex; justify-content: space-between; margin-bottom: 2rem; }}
@@ -140,10 +213,10 @@ def generate_post_html(slug, title, summary, content, img_path, lang, other_lang
             <a href="../../" class="btn">&larr; {back_text}</a>
             <a href="{other_lang_url}" class="btn">{read_other_lang} &rarr;</a>
         </div>
-        <img src="../../{img_path}" alt="{title}" onerror="this.src='https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80'">
+        <img src="{display_img_path}" alt="{title}" onerror="this.src='https://images.unsplash.com/photo-1677442136019-21780efad99a?auto=format&fit=crop&w=800&q=80'">
         <h1>{title}</h1>
         <div class="meta">
-            <span>{published_by}: {datetime.now().strftime("%Y-%m-%d")} | Manab AI {powered_by}</span>
+            <span>{published_by}: {datetime.now().strftime("%Y-%m-%d")} | {source_label}: {source}</span>
         </div>
         <div class="content">
             {content}
@@ -208,24 +281,23 @@ def main():
                     
                     image_prompt = rewritten["image_prompt"]
                 else:
-                    # ফলব্যাক (জেমিনি ফেইল করলে অরিজিনাল ডাটা বসবে এবং নিজস্ব জেনারেটেড ইমেজ হবে)
                     print("Gemini API failed. Using fallback original data.")
                     title_en = title
                     summary_en = (raw_desc[:150] + "...") if len(raw_desc) > 150 else raw_desc
-                    content_en = f"<p>{raw_desc}</p><br><p><a href='{orig_link}' target='_blank'>Read Original Article</a></p>"
+                    content_en = f"<p>{raw_desc}</p>"
                     
                     title_bn = title
                     summary_bn = summary_en
-                    content_bn = f"<p>{raw_desc}</p><br><p><a href='{orig_link}' target='_blank'>মূল আর্টিকেলটি পড়ুন</a></p>"
+                    content_bn = f"<p>{raw_desc}</p>"
                     
                     image_prompt = f"Futuristic technology abstract digital illustration of {title_en[:30]}"
 
-                # কপিরাইট এড়াতে এবং নিখুঁতভাবে প্রদর্শনের জন্য এআই ইমেজ জেনারেট করে নিজের ড্রাইভে ডাউনলোড
+                # কপিরাইট এড়াতে নতুন এআই ইমেজ জেনারেট করে নিজের ড্রাইভে ডাউনলোড
                 img_url = download_ai_image(image_prompt, slug)
 
                 # বাংলা ও ইংরেজি দুটি পৃথক পেজ জেনারেশন
-                generate_post_html(slug, title_bn, summary_bn, content_bn, img_url, "bn", f"../en/{slug}.html")
-                generate_post_html(slug, title_en, summary_en, content_en, img_url, "en", f"../bn/{slug}.html")
+                generate_post_html(slug, title_bn, summary_bn, content_bn, img_url, "bn", f"../en/{slug}.html", source)
+                generate_post_html(slug, title_en, summary_en, content_en, img_url, "en", f"../bn/{slug}.html", source)
                 
                 existing_news.insert(0, {
                     "title_en": title_en,
