@@ -1,5 +1,65 @@
 [
     {
+        "title_en": "Why the first GPU financiers are turning to inference chips in a $400 million deal",
+        "title_bn": "কেন প্রথম জিপিইউ ফাইন্যান্সাররা $ 400 মিলিয়ন ডলারের চুক্তিতে ইনফারেন্স চিপের দিকে ঝুঁকছে",
+        "link_en": "posts/en/why-the-first-gpu-financiers-are-turning-to-infere.html",
+        "link_bn": "posts/bn/why-the-first-gpu-financiers-are-turning-to-infere.html",
+        "original_link": "https://techcrunch.com/2026/07/17/why-the-first-gpu-financiers-are-turning-to-inference-chips-in-a-400-million-deal/",
+        "published": "Fri, 17 Jul 2026 12:00:00 +0000",
+        "source": "TechCrunch AI",
+        "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+        "description_en": "A $400 million chip-backed loan points to the next wave of AI infrastructure deals.",
+        "description_bn": "একটি $ 400 মিলিয়ন চিপ-সমর্থিত ঋণ AI পরিকাঠামো চুক্তির পরবর্তী তরঙ্গের দিকে নির্দেশ করে ।"
+    },
+    {
+        "title_en": "Apple’s lawsuit couldn’t come at a worse time for OpenAI",
+        "title_bn": "OpenAI-এর জন্য অ্যাপলের মামলা আরও খারাপ সময়ে আসতে পারে না",
+        "link_en": "posts/en/apples-lawsuit-couldnt-come-at-a-worse-time-for.html",
+        "link_bn": "posts/bn/apples-lawsuit-couldnt-come-at-a-worse-time-for.html",
+        "original_link": "https://techcrunch.com/podcast/apples-lawsuit-couldnt-come-at-a-worse-time-for-openai/",
+        "published": "Fri, 17 Jul 2026 14:00:00 +0000",
+        "source": "TechCrunch AI",
+        "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+        "description_en": "Apple&#160;filed a trade secrets&#160;lawsuit against OpenAI&#160;last Friday, and&#160;it&#8217;s&#160;not messing around. The complaint alleges a pa...",
+        "description_bn": "অ্যাপল গত শুক্রবার OpenAI-এর বিরুদ্ধে একটি বাণিজ্য গোপনীয়তা মামলা দায়ের করেছে এবং এটি গোলযোগ করছে না । অভিযোগটিতে অভিযোগ করা হয়েছে যে একজন বাবা..."
+    },
+    {
+        "title_en": "Patreon stops asking AI bots not to scrape — and starts blocking them",
+        "title_bn": "প্যাট্রিয়ন এআই বটগুলিকে স্ক্র্যাপ না করতে বলা বন্ধ করে দেয় — এবং তাদের ব্লক করা শুরু করে",
+        "link_en": "posts/en/patreon-stops-asking-ai-bots-not-to-scrape-and-s.html",
+        "link_bn": "posts/bn/patreon-stops-asking-ai-bots-not-to-scrape-and-s.html",
+        "original_link": "https://techcrunch.com/2026/07/17/patreon-stops-asking-ai-bots-not-to-scrape-and-starts-blocking-them/",
+        "published": "Fri, 17 Jul 2026 15:21:17 +0000",
+        "source": "TechCrunch AI",
+        "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+        "description_en": "Patreon is strengthening its defenses against AI scraping by working with Cloudflare to block bots that train AI models on creators’ content without p...",
+        "description_bn": "প্যাট্রিয়ন এআই স্ক্র্যাপিংয়ের বিরুদ্ধে তার প্রতিরক্ষা জোরদার করছে ক্লাউডফ্লেয়ারের সাথে কাজ করে বটগুলিকে ব্লক করার জন্য যা স্রষ্টাদের সামগ্রীতে এআই মডেলগুলিকে প্রশিক্ষণ দেয়..."
+    },
+    {
+        "title_en": "How Apple’s big lawsuit could disrupt OpenAI’s IPO plans",
+        "title_bn": "অ্যাপলের বড় মামলা কীভাবে OpenAI-এর আইপিও পরিকল্পনাকে ব্যাহত করতে পারে",
+        "link_en": "posts/en/how-apples-big-lawsuit-could-disrupt-openais-ipo.html",
+        "link_bn": "posts/bn/how-apples-big-lawsuit-could-disrupt-openais-ipo.html",
+        "original_link": "https://techcrunch.com/video/how-apples-big-lawsuit-could-disrupt-openais-ipo-plans/",
+        "published": "Fri, 17 Jul 2026 17:45:46 +0000",
+        "source": "TechCrunch AI",
+        "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+        "description_en": "Apple&#160;filed a trade secrets&#160;lawsuit against OpenAI&#160;last Friday, and&#160;it&#8217;s&#160;not messing around. The complaint alleges a pa...",
+        "description_bn": "অ্যাপল গত শুক্রবার OpenAI-এর বিরুদ্ধে একটি বাণিজ্য গোপনীয়তা মামলা দায়ের করেছে এবং এটি গোলযোগ করছে না । অভিযোগটিতে অভিযোগ করা হয়েছে যে একজন বাবা..."
+    },
+    {
+        "title_en": "AI-driven memory crunch jolts India’s smartphone market",
+        "title_bn": "এআই-চালিত মেমরি ক্রাঞ্চ ভারতের স্মার্টফোন বাজারকে কাঁপিয়ে দেয়",
+        "link_en": "posts/en/ai-driven-memory-crunch-jolts-indias-smartphone-m.html",
+        "link_bn": "posts/bn/ai-driven-memory-crunch-jolts-indias-smartphone-m.html",
+        "original_link": "https://techcrunch.com/2026/07/17/ai-driven-memory-crunch-jolts-indias-smartphone-market/",
+        "published": "Fri, 17 Jul 2026 20:09:27 +0000",
+        "source": "TechCrunch AI",
+        "image": "images/ai-driven-memory-crunch-jolts-indias-smartphone-m.jpg",
+        "description_en": "India's smartphone slowdown highlights how the AI boom is reshaping consumer electronics, from pricing and demand to corporate strategy.",
+        "description_bn": "ভারতের স্মার্টফোনের মন্থরতা হাইলাইট করে যে কীভাবে এআই বুম মূল্য এবং চাহিদা থেকে কর্পোরেট কৌশল পর্যন্ত ভোক্তা ইলেকট্রনিক্সকে পুনরায় আকার দিচ্ছে ।"
+    },
+    {
         "title_en": "Agility Robotics plants its flag in Tesla’s backyard",
         "title_bn": "অ্যাজিলিটি রোবোটিক্স টেসলার বাড়ির উঠোনে তার পতাকা লাগায়",
         "link_en": "posts/en/agility-robotics-plants-its-flag-in-teslas-backya.html",
