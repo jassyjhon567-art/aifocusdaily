@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><InSource> argo-workflows #14615 | Manab AI</title>
+<meta name="description" content="解析 #14615 這個 issue: Workflow 用 spec.workflowTemplateRef 指向一個還不存在或 informer cache 還沒同步到的 WorkflowTemplate 時，controller 直接呈現最終 Error 的狀態。 xyz-init-workflow Error 2m3s...">
+<meta name="keywords" content="insource, argo, workflows">
+<link rel="canonical" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/insource-argo-workflows-14615.html">
+<meta property="og:title" content="&lt;InSource&gt; argo-workflows #14615">
+<meta property="og:description" content="解析 #14615 這個 issue: Workflow 用 spec.workflowTemplateRef 指向一個還不存在或 informer cache 還沒同步到的 WorkflowTemplate 時，controller 直接呈現最終 Error 的狀態。 xyz-init-workflow Error 2m3s...">
+<meta property="og:image" content="https://jassyjhon567-art.github.io/aifocusdaily//images/insource-argo-workflows-14615.jpg">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/insource-argo-workflows-14615.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="&lt;InSource&gt; argo-workflows #14615">
+<meta name="twitter:description" content="解析 #14615 這個 issue: Workflow 用 spec.workflowTemplateRef 指向一個還不存在或 informer cache 還沒同步到的 WorkflowTemplate 時，controller 直接呈現最終 Error 的狀態。 xyz-init-workflow Error 2m3s...">
+<meta name="twitter:image" content="https://jassyjhon567-art.github.io/aifocusdaily//images/insource-argo-workflows-14615.jpg">
+<link rel="alternate" hreflang="bn" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/insource-argo-workflows-14615.html">
+<link rel="alternate" hreflang="x-default" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/insource-argo-workflows-14615.html">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "NewsArticle", "headline": "<InSource> argo-workflows #14615", "description": "解析 #14615 這個 issue: Workflow 用 spec.workflowTemplateRef 指向一個還不存在或 informer cache 還沒同步到的 WorkflowTemplate 時，controller 直接呈現最終 Error 的狀態。 xyz-init-workflow Error 2m3s...", "image": ["https://jassyjhon567-art.github.io/aifocusdaily//images/insource-argo-workflows-14615.jpg"], "datePublished": "2026-07-19T13:20:58Z", "dateModified": "2026-07-19T13:20:58Z", "inLanguage": "en", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://jassyjhon567-art.github.io/aifocusdaily//posts/en/insource-argo-workflows-14615.html"}, "author": {"@type": "Organization", "name": "Manab AI"}, "publisher": {"@type": "Organization", "name": "Manab AI", "logo": {"@type": "ImageObject", "url": "https://jassyjhon567-art.github.io/aifocusdaily//images/logo.png"}}}
+</script>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --card: #131722;
+    --accent: #6c5ce7;
+    --accent-glow: #a29bfe;
+    --text: #e6e6f0;
+    --muted: #9aa0b4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+  }
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .wrap { padding: 2.5rem; }
+  }
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  .nav a {
+    color: var(--accent-glow);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .lang-badge {
+    background: var(--card);
+    border: 1px solid #262b3d;
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  h1 {
+    font-size: 1.8rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .content p {
+    margin-bottom: 1.2rem;
+    font-size: 1.05rem;
+    color: var(--text);
+  }
+  .summary {
+    font-style: italic;
+    color: var(--muted);
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-wrap {
+    text-align: center;
+    margin: 3rem 0 1.5rem;
+  }
+  .original-btn {
+    display: inline-block;
+    padding: 0.9rem 2rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 999px;
+    box-shadow: 0 0 20px rgba(108, 92, 231, 0.6), 0 0 40px rgba(108, 92, 231, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .original-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(108, 92, 231, 0.85), 0 0 55px rgba(108, 92, 231, 0.45);
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 2rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a href="../../index.html">&larr; Manab AI</a>
+    <a class="lang-badge" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/insource-argo-workflows-14615.html">বাংলা</a>
+  </div>
+  <h1><InSource> argo-workflows #14615</h1>
+  <div class="meta">dev.to &middot; Sun, 19 Jul 2026 13:13:59 +0000</div>
+  <img class="hero-img" src="../../images/insource-argo-workflows-14615.jpg" alt="<InSource> argo-workflows #14615" referrerpolicy="no-referrer"
+       onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1200&h=675&fit=crop';">
+  <p class="summary">解析 #14615 這個 issue: Workflow 用 spec.workflowTemplateRef 指向一個還不存在或 informer cache 還沒同步到的 WorkflowTemplate 時，controller 直接呈現最終 Error 的狀態。 xyz-init-workflow Error 2m3s...</p>
+  <div class="content">
+    <p>解析 #14615 這個 issue: Workflow 用 spec.workflowTemplateRef 指向一個還不存在或 informer cache 還沒同步到的 WorkflowTemplate 時，controller 直接呈現最終 Error 的狀態。 xyz-init-workflow Error 2m3s workflowtemplates.argoproj.io "xyz-workflow-template" not found User 在 issue 中有提到的細節內容: This is because the workflow is deployed before the workflowtemplate . But even if we deploy it in the correct order, ArgoWF actually takes some time to process the workflowtemplate and know about it. So it still failed. 而且 User 直覺的表示是「retryStrategy 邏輯壞了」，因為配置的 retryStrategy 完全沒有觸發: Naturally, the retryStrategy should make the workflow retry in such scenarios. But it doesn't do retries. apiVersion: argoproj.io/v1alpha1 kind: Workflow metadata: name: xyz-init-workflow spec: workflowTemplateRef: name: xyz-workflow-template retryStrategy: limit: 3 retryPolicy: "Always" 深挖一番整個呼叫鏈後發現，真正的問題不在 retryStrategy 邏輯壞了，而是根本沒有走到 retry，workflow operate() 就已經判定整個 workflow 是有錯誤並直接報錯。 Call Chain Analysis operate () operator.go:194 ← reconcile 入口 │ defer persistUpdates () operator.go:199 ← 不管成敗，最後一定把 status 寫回 k8s │ ├─ setExecWorkflow ( ctx ) operator.go:217 ← ★ 模板解析在這裡，極早期 │ └─ setStoredWfSpec ( ctx ) operator.go:4343 │ └─ fetchWorkflowSpec ( ctx ) operator.go:4454 → 4299 │ └─ Lister () .Get ( name ) operator.go:4316 ← ★★ 錯誤源頭：NotFound │ │ 〔若 err〕→ markWorkflowError operator.go:4345 ← ★★★ 無條件打成 Error（終態） │ 〔若 err〕→ return （early exit ） operator.go:220 │ └─（以下完全到不了） executeTemplate () → processNodeRetries () ← retryStrategy 在這層，永遠走不到 詳細的 Call Chain 1. 錯誤源頭 — fetchWorkflowSpec ，operator.go:4316 我們先找到錯誤 workflowtemplates.argoproj.io "xyz" not found 的源頭: // operator.go:4314-4320 } else { woc . controller . metrics . CountWorkflowTemplate ( ... ) specHolder , err = woc . controller . wftmplInformer . Lister () . WorkflowTemplates ( woc . wf . Namespace ) . Get ( woc . wf . Spec . WorkflowTemplateRef . Name ) // :4316 } if err != nil { return nil , err // :4319 ← 原封不動往上拋，沒有任何分類 } Lister() 是 client-go 的 informer cache lister（不是直接打 API server）。cache 裡找不到該 name 時回 *apierrors.StatusError{Reason: NotFound} 。 這一段也反映 User 遇到的真實情境，一個為 WFT 還沒有部署; 另一個則為 WFT 部署了但 informer cache 卻還沒有同步。 :4318 if err != nil { return nil, err } 完全沒做 transient 分類，導致 NotFound 跟 template 內容錯誤 一視同仁往上拋。 2. setStoredWfSpec，operator.go:4454-4456 // operator.go:4453-4457 if woc . wf . Status . StoredWorkflowSpec == nil { wftHolder , err := woc . fetchWorkflowSpec ( ctx ) // :4454 if err != nil { return err // :4456 ← 一樣原樣上拋 } ... 這段是一個 Workflow 第一次被系統接手處理的檢查過程。 這個防呆機制為: 如果連任務的定義（Spec）都找不到，系統就不會浪費資源去建立執行環境（execWf），而是直接報錯結束。 所以 NotFound 發生在生命週期的最開頭，而 woc.execWf 此刻還是 nil。 3. 致命位置 — setExecWorkflow，operator.go:4343-4346 // operator.go:4333-4348（workflowTemplateRef 分支） case woc . wf . Spec . WorkflowTemplateRef != nil : ... // Strict/Secure mode 檢查 err := woc . setStoredWfSpec ( ctx ) // :4343 if err != nil { ctx = woc . markWorkflowError ( ctx , err ) // :4345 ★★★ 無條件 return ctx , err // :4346 } woc . execWf = & wfv1 . Workflow { Spec : * woc . wf . Status . StoredWorkflowSpec . DeepCopy ()} // :4348 ← 永遠到不了 4345 無條件 markWorkflowError —— 不判斷是不是 transient、不判斷是不是 NotFound。 // operator.go:2800-2802 func ( woc * wfOperationCtx ) markWorkflowError ( ctx context . Context , err error ) context . Context { return woc . markWorkflowPhase ( ctx , wfv1 . WorkflowError , err . Error ()) // Phase = "Error" } 最終導致 WorkflowError 是最終狀態： // workflow_phase.go:15-22 func ( p WorkflowPhase ) Completed () bool { switch p { case WorkflowSucceeded , WorkflowFailed , WorkflowError : // Error 算 Completed return true ... 一旦進 Error，controller 後續只會收尾，不會再 re-operate。 4. 收尾 — early return + defer 落地，operator.go:218-220 / 199 // operator.go:217-221 ctx , err := woc . setExecWorkflow ( ctx ) if err != nil { woc . log . WithError ( err ) . Error ( ctx , "Unable to set ExecWorkflow" ) // :219 return // :220 ← 整個 operate 提早結束 } // operator.go:198-200 defer func () { woc . persistUpdates ( ctx ) // :199 ← 即使 :220 提早 return，defer 仍把 Error 寫進 k8s }() 在這邊就宣判死刑了，status.message = workflowtemplates.argoproj.io "xyz" not found 。 User 的疑惑: 為什麼 retryStrategy 完全不參與? operator.go:387-407 要 woc.execWf 已建好才會跑到。 // operator.go:387-407 node , err := woc . executeTemplate ( ctx , woc . wf . Name , ... , woc . execWf . Spec . Arguments , ... ) // :387 if err != nil { ... default : // ★ 這條路徑「有」判 transient：transient 就不打 Error，留待 requeue if ! errorsutil . IsTransientErr ( ctx , err ) && ! woc . wf . Status . Phase . Completed () && ... { woc . markWorkflowError ( ctx , x ) // :399 } } retryStrategy 的實際重試在 executeTemplate() → processNodeRetries() （operator.go:972），只對已開始執行的 node 失敗才會產生效益。 WFT 解析失敗發生則是發生在 Node 執行之前，連 execWf 都還沒有建起來，所以根本走不到 retryStrategy ，這也說明了為什麼跟 User 其他有落差的原因。 From Root Cause to Solve 從 Source Code 的分析可以知道整個 issue 的來龍去脈，並可以總結出: 原因不是「retryStrategy 壞了」，而是兩個層級錯位 + 一條無條件失敗的路徑。 層級錯位 : WFT 解析發生在 workflow 啟動最前面、早於任何 node 執行 失敗路徑 : NotFound 在這條路徑上已經被無條件 markWorkflowError 直接宣判死刑。 How to Solve? setStoredWfSpec operator.go:4345 中無條件 markWorkflowError 的這段是我第一步著手想要處理的部分。 原本的行為是 ：workflow 指到一個還沒就緒的 WorkflowTemplate，controller 二話不說直接把 workflow 打成 Error，但這個選擇太一番兩瞪眼。 我的修法是 : 改成「先等一下（grace period 內標 Pending、每 10 秒重試），等模板出現就繼續跑；真的等太久才放棄打成 Error」，給判斷過程一個緩衝。 問題一: 這個新行為要套給誰？ 兩個選項: opt-in（要使用者自己打開）& default-on（直接幫所有人開） 選項一: opt-in（要使用者自己打開） 在 CRD（Workflow 的 YAML 規格）裡加一個新欄位，像是： spec : # 使用者要自己寫這行，新行為才生效 retryOnTemplateNotFound : true 這會導致沒有寫的人會維持秒死的舊行為，只有知道這個選項且有設定的人，才能有緩衝的時間。 這個選項成本會很大，雖然只是在 CRD 加一個新欄位，但連帶會生成: 跑 make codegen （重新生成一堆 Go 型別） 更新 swagger（API 文件定義） 更新使用者 docs 這會一瞬間牽動很多檔案異動的大 PR，也會導致比較難 Review。 選項二: default-on（直接幫所有人開) 不加任何欄位，所有 workflow 一律套用新行為，使用者什麼都不用改。 我最終選擇走 default-on 直接幫所有人開啟，既沒有真實風險、又能省下 CRD/codegen 那一大坨工程量，讓 PR 保持最小。 問題二: 這個"等一下(grace period)" 該從什麼時候開始算？那要等多久？ 新的問題又來了，我們的重試總不能無限等待下去，需要設定一個等待的上限，而要計算上限需要知道我們該從什麼時候開始算。 直覺上會想:「當這次把它標成 Pending，那就從這次標 Pending 的時間開始算。」這樣會出問題。 因為 controller 是每 10 秒重跑一輪的，而且每一輪都會重新把它標成 Pending，造成每10秒都重新計算，最終變成永不放棄！ 那該選什麼好勒？ CreationTimestamp 是 workflow 被建立那一刻的時間戳，K8s 已經幫我們記好的，而且建立後永遠不會變。 這個固定不動的錨點，讓我們有一個明確的重試上限，一個一定會到期的上限，所以我們最終就以 CreationTimestamp 為我們的起算時間。 Action: In Detail 這次的修正我們的核心概念是: 把 setExecWorkflow （operator.go:4343-4346）目前 無條件 markWorkflowError 改成: 只對 WorkflowTemplate NotFound 做有上限的重試 並在 grace period 內標 Pending 且 requeue 等 WorkflowTemplate 就緒，逾時才 fallback 回 Error 。 深入細節 err := woc . setStoredWfSpec ( ctx ) if err != nil { // Tolerate a not-yet-available WorkflowTemplate (applied together via GitOps, or informer cache // lag): within a grace period measured from creation, keep the workflow Pending and requeue so it // starts once the template appears; after that, fail so a genuinely missing template still fails fast. gracePeriod := woc . controller . Config . GetWorkflowTemplateNotFoundGracePeriod () if apierr . IsNotFound ( err ) && time . Since ( woc . wf . CreationTimestamp . Time ) &lt; gracePeriod { ctx = woc . markWorkflowPhase ( ctx , wfv1 . WorkflowPending , fmt . Sprintf ( "Waiting for referenced WorkflowTemplate to become available: %v" , err )) woc . requeueAfter ( GetRequeueTime ()) return ctx , ErrWorkflowTemplateNotReady } 修正程式碼 要點1: 只在 setExecWorkflow 判斷「找不到 WorkflowTemplate」，不要動全域規則 controller 有一個全域的「哪些錯誤算暫時性、可以重試」清單。其實最偷懶的改法是把「NotFound（找不到）」加進那個全域清單，但我們沒有走這個選項。 雖然可能一行就搞定，但因為這是全域的，所有呼叫 IsTransientErr 的地方從此都會把「NotFound」當成可重試，還包括那些"東西真的被刪了、本該永久失敗"的路徑，害它們變成無限重試。 所以我們只在 err := woc.setStoredWfSpec(ctx) 用 apierr.IsNotFound 來判斷這個錯是不是 NotFound。 要點 2：等待要有期限，而且期限要從「Workflow 建立時間」算起 除了使用 CreationTimestamp 作為 workflow 被建立那一刻的時間戳外，也另外新增一個設定值 workflowTemplateNotFoundGracePeriod 。 預設為 30 seconds ，也可以調整為 0 second，即可完全恢復成舊的秒死的行為。 要點 3：用一個「特製的錯誤」當暗號，告訴 Operate 需要再等等 這邊設定一個新"暗號" ErrWorkflowTemplateNotReady ，當沒有發現 WorkflowTemplate 時，起到兩個作用: a. 「非空」的 error : 讓上層 operate 提早收工，不要繼續往下跑（因為此時範本還沒解析好，硬跑會拿到不完整的資料）。 b. 上層用 errors.Is 認出這個特定暗號 : 當出現這個預期的錯誤時，operate 會安靜的 return，不印錯誤 log，否則寬限期內每次重試都會噴一條誤導人的 ERROR，看起來像壞了。 要點 4：markWorkflowPhase — 改 Workflow 的「狀態階段」 operator.go:2627 中核心內容: woc.wf.Status.Phase = phase(L2643 ) 把這個 Workflow 標成 Pending / Running / Error / Succeeded 等。順帶做的事: 它只改記憶體裡的 woc.wf 物件並把 woc.updated = true(L2642) 真正寫回 etcd 是 operate() 結尾的 defer persistUpdates 統一落地。所以我們只是在流程中「標 Pending」,不會馬上打 API server。 而 markWorkflowError 就是 markWorkflowPhase 的一個薄包裝 operator.go:2817,整個函式只有一行: func ( woc * wfOperationCtx ) markWorkflowError ( ctx , err ) context . Context { return woc . markWorkflowPhase ( ctx , wfv1 . WorkflowError , err . Error ()) } 「逾時回 markWorkflowError」在講什麼:fix 加了 grace 判斷後，grace 期內走 markWorkflowPhase(Pending)(暫時等); grace 過了,就 fallback 回原本的 markWorkflowError,讓它照舊落終態 Error。 要點 5：requeueAfter: N 秒後再排我 把這個 workflow 丟回待處理 wfQueue ，但不是馬上重跑，而是 N 秒後再排我一次。 因為 template 剛套用時，controller 內部的快取(informer)可能還沒同步到，馬上重試也是白跑，不如等一下再檢查。 controller 有三種 requeue 機制: wfQueue.Add(key) : 立即入列 wfQueue.AddAfter(key, d) : 固定延遲 d wfQueue.AddRateLimited(key) : limiter 決定的間隔 那要等多久? 我們直接使用 GetRequeueTime() ，直接用系統統一設定的參數（統一 10 秒，可以用環境變數調整）。 為什麼非得主動 requeue: WFT 的 informer 沒有事件 handler,別人建立 WorkflowTemplate 不會自動叫醒在等的 Workflow。所以只能靠自己排 requeueAfter 定期回來看。這也是為什麼要標 Pending(未完成才吃得到 requeue)而不是 Error(終態,永不再看)。 Result 經過 Reviewer 審閱後，他回覆了: I don't think we should fix this. Even if we fix it for workflowTemplateRef we've still got a problem if your workflow references WFT A which needs B and B hasn't appeared yet. The only good fix here is to apply WorkflowTemplates before workflows, and I don't want the added complication and surprises at runtime which this fix would entail. 很顯然 Reviewer 覺得最正確的做法反而不是修改目前的流程，而是要 User 保證部署的順序 —— 先把所有 WorkflowTemplate 都建好，再去跑用到它們的 Workflow，而不是叫 controller 在執行時自己「等一下」。 確實，在解這題的時候沒有想到 WorkflowTemplate 自己又依賴另一個 WorkflowTemplate（A 需要 B）這種用法，在這種情況下，又會回到原本的位置，很顯然沒有解掉完整的問題。</p>
+    <p>The report highlights key developments related to "<InSource> argo-workflows #14615", offering context for readers who want to understand the broader implications of this story as it continues to unfold.</p>
+    <p>Readers interested in the full details, including direct quotes and additional context, are encouraged to consult the original source linked at the end of this article.</p>
+  </div>
+  <div class="cta-wrap">
+    <a class="original-btn" href="https://dev.to/hchsu/argo-workflows-14615-3koo" target="_blank" rel="noopener noreferrer">
+      Read More &mdash; Original Article
+    </a>
+  </div>
+  <footer>&copy; 2026 Manab AI &mdash; Automated Knowledge Platform</footer>
+</div>
+</body>
+</html>
