@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ওপেনএসএসএল-এর 'হলোবাইট' ত্রুটি: মাত্র ১১-বাইটের টিএলএস অনুরোধে ফ্রিজ হতে পারে সার্ভারের মেমরি | Manab AI</title>
+<meta name="description" content="ওপেনএসএসএল-এর হলোবাইট ত্রুটির কারণে আক্রমণকারীরা মাত্র ১১-বাইটের টিএলএস অনুরোধ পাঠিয়ে সার্ভারের মেমরি ফ্রিজ করতে পারে, যা প্যাচ না করা সিস্টেমে ডেনিয়াল-অফ-সার্ভিস পরিস্থিতি তৈরি করতে পারে।">
+<meta name="keywords" content="ওপেনএসএসএল, 'হলোবাইট', ত্রুটি, মাত্র, বাইটের, টিএলএস, অনুরোধে, ফ্রিজ, হতে, পারে, সার্ভারের, মেমরি">
+<link rel="canonical" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html">
+<meta property="og:title" content="ওপেনএসএসএল-এর &#x27;হলোবাইট&#x27; ত্রুটি: মাত্র ১১-বাইটের টিএলএস অনুরোধে ফ্রিজ হতে পারে সার্ভারের মেমরি">
+<meta property="og:description" content="ওপেনএসএসএল-এর হলোবাইট ত্রুটির কারণে আক্রমণকারীরা মাত্র ১১-বাইটের টিএলএস অনুরোধ পাঠিয়ে সার্ভারের মেমরি ফ্রিজ করতে পারে, যা প্যাচ না করা সিস্টেমে ডেনিয়াল-অফ-সার্ভিস পরিস্থিতি তৈরি করতে পারে।">
+<meta property="og:image" content="https://jassyjhon567-art.github.io/aifocusdaily//images/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.jpg">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html">
+<meta property="og:locale" content="bn_BD">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ওপেনএসএসএল-এর &#x27;হলোবাইট&#x27; ত্রুটি: মাত্র ১১-বাইটের টিএলএস অনুরোধে ফ্রিজ হতে পারে সার্ভারের মেমরি">
+<meta name="twitter:description" content="ওপেনএসএসএল-এর হলোবাইট ত্রুটির কারণে আক্রমণকারীরা মাত্র ১১-বাইটের টিএলএস অনুরোধ পাঠিয়ে সার্ভারের মেমরি ফ্রিজ করতে পারে, যা প্যাচ না করা সিস্টেমে ডেনিয়াল-অফ-সার্ভিস পরিস্থিতি তৈরি করতে পারে।">
+<meta name="twitter:image" content="https://jassyjhon567-art.github.io/aifocusdaily//images/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.jpg">
+<link rel="alternate" hreflang="en" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html">
+<link rel="alternate" hreflang="x-default" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "NewsArticle", "headline": "ওপেনএসএসএল-এর 'হলোবাইট' ত্রুটি: মাত্র ১১-বাইটের টিএলএস অনুরোধে ফ্রিজ হতে পারে সার্ভারের মেমরি", "description": "ওপেনএসএসএল-এর হলোবাইট ত্রুটির কারণে আক্রমণকারীরা মাত্র ১১-বাইটের টিএলএস অনুরোধ পাঠিয়ে সার্ভারের মেমরি ফ্রিজ করতে পারে, যা প্যাচ না করা সিস্টেমে ডেনিয়াল-অফ-সার্ভিস পরিস্থিতি তৈরি করতে পারে।", "image": ["https://jassyjhon567-art.github.io/aifocusdaily//images/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.jpg"], "datePublished": "2026-07-19T10:40:29Z", "dateModified": "2026-07-19T10:40:29Z", "inLanguage": "bn", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html"}, "author": {"@type": "Organization", "name": "Manab AI"}, "publisher": {"@type": "Organization", "name": "Manab AI", "logo": {"@type": "ImageObject", "url": "https://jassyjhon567-art.github.io/aifocusdaily//images/logo.png"}}}
+</script>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --card: #131722;
+    --accent: #6c5ce7;
+    --accent-glow: #a29bfe;
+    --text: #e6e6f0;
+    --muted: #9aa0b4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+  }
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .wrap { padding: 2.5rem; }
+  }
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  .nav a {
+    color: var(--accent-glow);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .lang-badge {
+    background: var(--card);
+    border: 1px solid #262b3d;
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  h1 {
+    font-size: 1.8rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .content p {
+    margin-bottom: 1.2rem;
+    font-size: 1.05rem;
+    color: var(--text);
+  }
+  .summary {
+    font-style: italic;
+    color: var(--muted);
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-wrap {
+    text-align: center;
+    margin: 3rem 0 1.5rem;
+  }
+  .original-btn {
+    display: inline-block;
+    padding: 0.9rem 2rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 999px;
+    box-shadow: 0 0 20px rgba(108, 92, 231, 0.6), 0 0 40px rgba(108, 92, 231, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .original-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(108, 92, 231, 0.85), 0 0 55px rgba(108, 92, 231, 0.45);
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 2rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a href="../../index.html">&larr; Manab AI</a>
+    <a class="lang-badge" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html">English</a>
+  </div>
+  <h1>ওপেনএসএসএল-এর 'হলোবাইট' ত্রুটি: মাত্র ১১-বাইটের টিএলএস অনুরোধে ফ্রিজ হতে পারে সার্ভারের মেমরি</h1>
+  <div class="meta">thehackernews.com &middot; Sat, 18 Jul 2026 01:50:53 +0530</div>
+  <img class="hero-img" src="../../images/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.jpg" alt="ওপেনএসএসএল-এর 'হলোবাইট' ত্রুটি: মাত্র ১১-বাইটের টিএলএস অনুরোধে ফ্রিজ হতে পারে সার্ভারের মেমরি" referrerpolicy="no-referrer"
+       onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1200&h=675&fit=crop';">
+  <p class="summary">ওপেনএসএসএল-এর হলোবাইট ত্রুটির কারণে আক্রমণকারীরা মাত্র ১১-বাইটের টিএলএস অনুরোধ পাঠিয়ে সার্ভারের মেমরি ফ্রিজ করতে পারে, যা প্যাচ না করা সিস্টেমে ডেনিয়াল-অফ-সার্ভিস পরিস্থিতি তৈরি করতে পারে।</p>
+  <div class="content">
+    <p>ওপেনএসএসএল (OpenSSL) ক্রিপ্টোগ্রাফিক লাইব্রেরিতে নতুনভাবে প্রকাশিত একটি দুর্বলতা, যা "হলোবাইট" (HollowByte) নামে পরিচিত, দূরবর্তী আক্রমণকারীদের অত্যন্ত ছোট নেটওয়ার্ক অনুরোধ ব্যবহার করে সার্ভারের মেমরি ফ্রিজ বা নিষ্ক্রিয় করার সুযোগ করে দিতে পারে। নিরাপত্তা গবেষকরা প্রকাশ করেছেন যে, একটি প্যাচ না করা ওপেনএসএসএল সার্ভারে মাত্র ১১ বাইটের একটি বিশেষভাবে তৈরি টিএলএস (TLS) অনুরোধ পাঠিয়ে ১৩১ কিলোবাইট পর্যন্ত বাফার মেমরি আলাদা করে রাখার জন্য বাধ্য করা যেতে পারে। যেহেতু প্রত্যাশিত হ্যান্ডশেক বার্তাটি কখনোই পৌঁছায় না, তাই সার্ভারটি এই মেমরি অনির্দিষ্টকালের জন্য সংরক্ষণ করে রাখে, যা একটি মারাত্মক ডেনিয়াল-অফ-সার্ভিস (DoS) আক্রমণের পথ তৈরি করে।</p>
+    <p>স্ট্যান্ডার্ড জিএনইউ সি লাইব্রেরি (glibc) ব্যবহারকারী সিস্টেমগুলোতে এই ত্রুটির বাস্তব প্রভাব বিশেষভাবে মারাত্মক। ওকটা (Okta)-র রেড টিমের দ্বারা পরিচালিত ব্যাপক পরীক্ষা অনুসারে, এই ক্ষতিকারক ও অসম্পূর্ণ অনুরোধগুলোর সময় বরাদ্দ করা মেমরি কার্যকরভাবে হারিয়ে যায় এবং আক্রান্ত সার্ভার প্রক্রিয়াটি সম্পূর্ণরূপে পুনরায় চালু (রিস্টার্ট) না করা পর্যন্ত অপারেটিং সিস্টেম তা পুনরুদ্ধার করতে পারে না। এই ক্ষুদ্র ১১-বাইটের প্যাকেটগুলো বারবার পাঠানোর মাধ্যমে, একজন আক্রমণকারী ন্যূনতম নেটওয়ার্ক ব্যান্ডউইথ এবং সামান্য প্রচেষ্টায় একটি লক্ষ্যবস্তু সার্ভারের উপলব্ধ মেমরি সংস্থান দ্রুত শেষ করে দিতে পারে।</p>
+    <p>যদিও ওপেনএসএসএল গত জুন মাসে হলোবাইট ত্রুটির জন্য একটি সফটওয়্যার সমাধান (ফিক্স) নীরবে প্রকাশ করেছিল, তবে এই প্যাচটি কোনো কমন ভালনারেবিলিটিজ অ্যান্ড এক্সপোজার (CVE) শনাক্তকারী, কোনো অফিসিয়াল নিরাপত্তা পরামর্শ বা রিলিজের পাবলিক চেঞ্জলগে কোনো স্পষ্ট উল্লেখ ছাড়াই মোতায়েন করা হয়েছিল। এই ধরনের সাধারণ পাবলিক ডকুমেন্টেশনের অভাবের কারণে অনেক সিস্টেম অ্যাডমিনিস্ট্রেটর এই অন্তর্নিহিত নিরাপত্তা ঝুঁকি সম্পর্কে সম্পূর্ণ অসচেতন ছিলেন। ওকটার রেড টিম, যারা মূলত এই দুর্বলতাটি আবিষ্কার, রিপোর্ট এবং নামকরণ করেছিল, এখন প্রতিষ্ঠানগুলোকে তাদের ওপেনএসএসএল ডেপ্লয়মেন্ট অবিলম্বে আপডেট করতে উত্সাহিত করার জন্য তাদের বিস্তারিত গবেষণা প্রকাশ করেছে।</p>
+  </div>
+  <div class="cta-wrap">
+    <a class="original-btn" href="https://thehackernews.com/2026/07/openssl-hollowbyte-flaw-could-freeze.html" target="_blank" rel="noopener noreferrer">
+      Read More &mdash; Original Article
+    </a>
+  </div>
+  <footer>&copy; 2026 Manab AI &mdash; Automated Knowledge Platform</footer>
+</div>
+</body>
+</html>

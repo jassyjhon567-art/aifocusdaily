@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Fix Infinite Loops in React's useEffect Hook with Objects and Arrays | Manab AI</title>
+<meta name="description" content="This article explains why objects and arrays trigger infinite loops in React&#x27;s useEffect hook and provides practical solutions, including referential checks and deep comparison libraries.">
+<meta name="keywords" content="how, fix, infinite, loops, react's, useeffect, hook, objects, arrays">
+<link rel="canonical" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/cmo-solucionar-el-bucle-infinito-en-useeffect-con-objetos-y-arrays.html">
+<meta property="og:title" content="How to Fix Infinite Loops in React&#x27;s useEffect Hook with Objects and Arrays">
+<meta property="og:description" content="This article explains why objects and arrays trigger infinite loops in React&#x27;s useEffect hook and provides practical solutions, including referential checks and deep comparison libraries.">
+<meta property="og:image" content="https://jassyjhon567-art.github.io/aifocusdaily//images/cmo-solucionar-el-bucle-infinito-en-useeffect-con-objetos-y-arrays.jpg">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/cmo-solucionar-el-bucle-infinito-en-useeffect-con-objetos-y-arrays.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to Fix Infinite Loops in React&#x27;s useEffect Hook with Objects and Arrays">
+<meta name="twitter:description" content="This article explains why objects and arrays trigger infinite loops in React&#x27;s useEffect hook and provides practical solutions, including referential checks and deep comparison libraries.">
+<meta name="twitter:image" content="https://jassyjhon567-art.github.io/aifocusdaily//images/cmo-solucionar-el-bucle-infinito-en-useeffect-con-objetos-y-arrays.jpg">
+<link rel="alternate" hreflang="bn" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/cmo-solucionar-el-bucle-infinito-en-useeffect-con-objetos-y-arrays.html">
+<link rel="alternate" hreflang="x-default" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/cmo-solucionar-el-bucle-infinito-en-useeffect-con-objetos-y-arrays.html">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "NewsArticle", "headline": "How to Fix Infinite Loops in React's useEffect Hook with Objects and Arrays", "description": "This article explains why objects and arrays trigger infinite loops in React's useEffect hook and provides practical solutions, including referential checks and deep comparison libraries.", "image": ["https://jassyjhon567-art.github.io/aifocusdaily//images/cmo-solucionar-el-bucle-infinito-en-useeffect-con-objetos-y-arrays.jpg"], "datePublished": "2026-07-19T10:40:06Z", "dateModified": "2026-07-19T10:40:06Z", "inLanguage": "en", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://jassyjhon567-art.github.io/aifocusdaily//posts/en/cmo-solucionar-el-bucle-infinito-en-useeffect-con-objetos-y-arrays.html"}, "author": {"@type": "Organization", "name": "Manab AI"}, "publisher": {"@type": "Organization", "name": "Manab AI", "logo": {"@type": "ImageObject", "url": "https://jassyjhon567-art.github.io/aifocusdaily//images/logo.png"}}}
+</script>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --card: #131722;
+    --accent: #6c5ce7;
+    --accent-glow: #a29bfe;
+    --text: #e6e6f0;
+    --muted: #9aa0b4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+  }
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .wrap { padding: 2.5rem; }
+  }
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  .nav a {
+    color: var(--accent-glow);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .lang-badge {
+    background: var(--card);
+    border: 1px solid #262b3d;
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  h1 {
+    font-size: 1.8rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .content p {
+    margin-bottom: 1.2rem;
+    font-size: 1.05rem;
+    color: var(--text);
+  }
+  .summary {
+    font-style: italic;
+    color: var(--muted);
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-wrap {
+    text-align: center;
+    margin: 3rem 0 1.5rem;
+  }
+  .original-btn {
+    display: inline-block;
+    padding: 0.9rem 2rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 999px;
+    box-shadow: 0 0 20px rgba(108, 92, 231, 0.6), 0 0 40px rgba(108, 92, 231, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .original-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(108, 92, 231, 0.85), 0 0 55px rgba(108, 92, 231, 0.45);
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 2rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a href="../../index.html">&larr; Manab AI</a>
+    <a class="lang-badge" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/cmo-solucionar-el-bucle-infinito-en-useeffect-con-objetos-y-arrays.html">বাংলা</a>
+  </div>
+  <h1>How to Fix Infinite Loops in React's useEffect Hook with Objects and Arrays</h1>
+  <div class="meta">dev.to &middot; Sun, 19 Jul 2026 10:21:35 +0000</div>
+  <img class="hero-img" src="../../images/cmo-solucionar-el-bucle-infinito-en-useeffect-con-objetos-y-arrays.jpg" alt="How to Fix Infinite Loops in React's useEffect Hook with Objects and Arrays" referrerpolicy="no-referrer"
+       onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1495020689067-958852a7765e?w=1200&h=675&fit=crop';">
+  <p class="summary">This article explains why objects and arrays trigger infinite loops in React's useEffect hook and provides practical solutions, including referential checks and deep comparison libraries.</p>
+  <div class="content">
+    <p>React developers frequently encounter infinite render loops when using the `useEffect` hook with objects or arrays in the dependency array. This issue arises because React compares dependency values using strict referential equality (`===`) rather than a deep comparison of their contents. When a state setter function updates an object or array, a new reference in memory is created. Even if the content of the updated object remains identical to the previous one, React detects a change in reference (since `{}` !== `{}` is always true), triggering the effect again and resulting in an endless loop.</p>
+    <p>To resolve this, developers can employ several practical strategies depending on their specific use case. For simple initialization, using an empty dependency array ensures the effect runs only once when the component mounts. When tracking actual state changes, utilizing `JSON.stringify` offers a basic way to compare object contents, though it has limitations with functions or undefined values. Alternatively, checking conditions before updating state—such as verifying if an object is already empty using `Object.keys()`—can prevent redundant updates and break the loop.</p>
+    <p>For complex state logic, adopting the `useReducer` hook or managing non-rendering values with `useRef` are highly recommended patterns. Developers can also leverage specialized external libraries like `use-deep-compare-effect` to handle deep comparisons seamlessly. Ultimately, the golden rule in React development is to always verify if a state update is absolutely necessary before invoking a setter function within `useEffect`, ensuring optimal performance and avoiding costly infinite loops in production environments.</p>
+  </div>
+  <div class="cta-wrap">
+    <a class="original-btn" href="https://dev.to/erickeduardoramos03/como-solucionar-el-bucle-infinito-en-useeffect-con-objetos-y-arrays-57l9" target="_blank" rel="noopener noreferrer">
+      Read More &mdash; Original Article
+    </a>
+  </div>
+  <footer>&copy; 2026 Manab AI &mdash; Automated Knowledge Platform</footer>
+</div>
+</body>
+</html>

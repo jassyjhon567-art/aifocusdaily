@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HollowByte Vulnerability in OpenSSL Allows Tiny 11-Byte Requests to Freeze Server Memory | Manab AI</title>
+<meta name="description" content="The HollowByte vulnerability in OpenSSL allows attackers to freeze server memory using tiny 11-byte TLS requests, leading to potential denial-of-service conditions on unpatched systems.">
+<meta name="keywords" content="hollowbyte, vulnerability, openssl, allows, tiny, byte, requests, freeze, server, memory">
+<link rel="canonical" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html">
+<meta property="og:title" content="HollowByte Vulnerability in OpenSSL Allows Tiny 11-Byte Requests to Freeze Server Memory">
+<meta property="og:description" content="The HollowByte vulnerability in OpenSSL allows attackers to freeze server memory using tiny 11-byte TLS requests, leading to potential denial-of-service conditions on unpatched systems.">
+<meta property="og:image" content="https://jassyjhon567-art.github.io/aifocusdaily//images/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.jpg">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HollowByte Vulnerability in OpenSSL Allows Tiny 11-Byte Requests to Freeze Server Memory">
+<meta name="twitter:description" content="The HollowByte vulnerability in OpenSSL allows attackers to freeze server memory using tiny 11-byte TLS requests, leading to potential denial-of-service conditions on unpatched systems.">
+<meta name="twitter:image" content="https://jassyjhon567-art.github.io/aifocusdaily//images/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.jpg">
+<link rel="alternate" hreflang="bn" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html">
+<link rel="alternate" hreflang="x-default" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "NewsArticle", "headline": "HollowByte Vulnerability in OpenSSL Allows Tiny 11-Byte Requests to Freeze Server Memory", "description": "The HollowByte vulnerability in OpenSSL allows attackers to freeze server memory using tiny 11-byte TLS requests, leading to potential denial-of-service conditions on unpatched systems.", "image": ["https://jassyjhon567-art.github.io/aifocusdaily//images/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.jpg"], "datePublished": "2026-07-19T10:40:29Z", "dateModified": "2026-07-19T10:40:29Z", "inLanguage": "en", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://jassyjhon567-art.github.io/aifocusdaily//posts/en/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html"}, "author": {"@type": "Organization", "name": "Manab AI"}, "publisher": {"@type": "Organization", "name": "Manab AI", "logo": {"@type": "ImageObject", "url": "https://jassyjhon567-art.github.io/aifocusdaily//images/logo.png"}}}
+</script>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --card: #131722;
+    --accent: #6c5ce7;
+    --accent-glow: #a29bfe;
+    --text: #e6e6f0;
+    --muted: #9aa0b4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+  }
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .wrap { padding: 2.5rem; }
+  }
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  .nav a {
+    color: var(--accent-glow);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .lang-badge {
+    background: var(--card);
+    border: 1px solid #262b3d;
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  h1 {
+    font-size: 1.8rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .content p {
+    margin-bottom: 1.2rem;
+    font-size: 1.05rem;
+    color: var(--text);
+  }
+  .summary {
+    font-style: italic;
+    color: var(--muted);
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-wrap {
+    text-align: center;
+    margin: 3rem 0 1.5rem;
+  }
+  .original-btn {
+    display: inline-block;
+    padding: 0.9rem 2rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 999px;
+    box-shadow: 0 0 20px rgba(108, 92, 231, 0.6), 0 0 40px rgba(108, 92, 231, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .original-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(108, 92, 231, 0.85), 0 0 55px rgba(108, 92, 231, 0.45);
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 2rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a href="../../index.html">&larr; Manab AI</a>
+    <a class="lang-badge" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.html">বাংলা</a>
+  </div>
+  <h1>HollowByte Vulnerability in OpenSSL Allows Tiny 11-Byte Requests to Freeze Server Memory</h1>
+  <div class="meta">thehackernews.com &middot; Sat, 18 Jul 2026 01:50:53 +0530</div>
+  <img class="hero-img" src="../../images/openssl-hollowbyte-flaw-could-freeze-server-memory-with-11-byte-tls-requests.jpg" alt="HollowByte Vulnerability in OpenSSL Allows Tiny 11-Byte Requests to Freeze Server Memory" referrerpolicy="no-referrer"
+       onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200&h=675&fit=crop';">
+  <p class="summary">The HollowByte vulnerability in OpenSSL allows attackers to freeze server memory using tiny 11-byte TLS requests, leading to potential denial-of-service conditions on unpatched systems.</p>
+  <div class="content">
+    <p>A newly disclosed vulnerability in the widely used OpenSSL cryptographic library, dubbed "HollowByte," could allow remote attackers to freeze server memory using extremely small network requests. Security researchers revealed that an unpatched OpenSSL server can be triggered to set aside up to 131 kilobytes of buffer memory by sending a specially crafted TLS request of just 11 bytes. Because the expected handshake message never actually arrives, the server keeps this memory reserved indefinitely, paving the way for devastating denial-of-service (DoS) attacks.</p>
+    <p>The real-world impact of this flaw is particularly severe on systems using the standard GNU C Library (glibc). According to extensive testing conducted by Okta's Red Team, the memory allocated during these malicious, incomplete requests is effectively lost and cannot be reclaimed by the operating system until the affected OpenSSL server process is completely restarted. By repeatedly sending these tiny 11-byte packets, an attacker could rapidly exhaust a target server's available memory resources with minimal network bandwidth and effort.</p>
+    <p>Although OpenSSL quietly shipped a software fix for the HollowByte bug in June, the patch was deployed without an accompanying Common Vulnerabilities and Exposures (CVE) identifier, an official security advisory, or any explicit mention in the release's public changelog. This lack of standard public documentation left many system administrators completely unaware of the underlying security risk. Okta's Red Team, which initially discovered, reported, and named the vulnerability, has now published its detailed research to encourage organizations to update their OpenSSL deployments immediately.</p>
+  </div>
+  <div class="cta-wrap">
+    <a class="original-btn" href="https://thehackernews.com/2026/07/openssl-hollowbyte-flaw-could-freeze.html" target="_blank" rel="noopener noreferrer">
+      Read More &mdash; Original Article
+    </a>
+  </div>
+  <footer>&copy; 2026 Manab AI &mdash; Automated Knowledge Platform</footer>
+</div>
+</body>
+</html>
