@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>On-Premise AI Code Review: How We Deployed Claude Locally in an Air-Gapped Environment (Setup Guide) | Manab AI</title>
+<meta name="description" content="The security officer said no. Not &quot;maybe with some modifications.&quot; Not &quot;let us review the data handling policy.&quot; No. Cloud-hosted AI code review was not going to happen in their...">
+<meta name="keywords" content="premise, code, review, how, deployed, claude, locally, air, gapped, environment, setup, guide">
+<link rel="canonical" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/on-premise-ai-code-review-how-we-deployed-claude-locally-in-an-air-gapped-enviro.html">
+<meta property="og:title" content="On-Premise AI Code Review: How We Deployed Claude Locally in an Air-Gapped Environment (Setup Guide)">
+<meta property="og:description" content="The security officer said no. Not &quot;maybe with some modifications.&quot; Not &quot;let us review the data handling policy.&quot; No. Cloud-hosted AI code review was not going to happen in their...">
+<meta property="og:image" content="https://jassyjhon567-art.github.io/aifocusdaily//images/on-premise-ai-code-review-how-we-deployed-claude-locally-in-an-air-gapped-enviro.jpg">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/on-premise-ai-code-review-how-we-deployed-claude-locally-in-an-air-gapped-enviro.html">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="On-Premise AI Code Review: How We Deployed Claude Locally in an Air-Gapped Environment (Setup Guide)">
+<meta name="twitter:description" content="The security officer said no. Not &quot;maybe with some modifications.&quot; Not &quot;let us review the data handling policy.&quot; No. Cloud-hosted AI code review was not going to happen in their...">
+<meta name="twitter:image" content="https://jassyjhon567-art.github.io/aifocusdaily//images/on-premise-ai-code-review-how-we-deployed-claude-locally-in-an-air-gapped-enviro.jpg">
+<link rel="alternate" hreflang="bn" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/on-premise-ai-code-review-how-we-deployed-claude-locally-in-an-air-gapped-enviro.html">
+<link rel="alternate" hreflang="x-default" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/en/on-premise-ai-code-review-how-we-deployed-claude-locally-in-an-air-gapped-enviro.html">
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "NewsArticle", "headline": "On-Premise AI Code Review: How We Deployed Claude Locally in an Air-Gapped Environment (Setup Guide)", "description": "The security officer said no. Not \"maybe with some modifications.\" Not \"let us review the data handling policy.\" No. Cloud-hosted AI code review was not going to happen in their...", "image": ["https://jassyjhon567-art.github.io/aifocusdaily//images/on-premise-ai-code-review-how-we-deployed-claude-locally-in-an-air-gapped-enviro.jpg"], "datePublished": "2026-07-19T19:10:18Z", "dateModified": "2026-07-19T19:10:18Z", "inLanguage": "en", "mainEntityOfPage": {"@type": "WebPage", "@id": "https://jassyjhon567-art.github.io/aifocusdaily//posts/en/on-premise-ai-code-review-how-we-deployed-claude-locally-in-an-air-gapped-enviro.html"}, "author": {"@type": "Organization", "name": "Manab AI"}, "publisher": {"@type": "Organization", "name": "Manab AI", "logo": {"@type": "ImageObject", "url": "https://jassyjhon567-art.github.io/aifocusdaily//images/logo.png"}}}
+</script>
+<style>
+  :root {
+    --bg: #0b0e14;
+    --card: #131722;
+    --accent: #6c5ce7;
+    --accent-glow: #a29bfe;
+    --text: #e6e6f0;
+    --muted: #9aa0b4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.7;
+  }
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .wrap { padding: 2.5rem; }
+  }
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  .nav a {
+    color: var(--accent-glow);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .lang-badge {
+    background: var(--card);
+    border: 1px solid #262b3d;
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  h1 {
+    font-size: 1.8rem;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+  .meta {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+  .hero-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+  }
+  .content p {
+    margin-bottom: 1.2rem;
+    font-size: 1.05rem;
+    color: var(--text);
+  }
+  .summary {
+    font-style: italic;
+    color: var(--muted);
+    border-left: 3px solid var(--accent);
+    padding-left: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .cta-wrap {
+    text-align: center;
+    margin: 3rem 0 1.5rem;
+  }
+  .original-btn {
+    display: inline-block;
+    padding: 0.9rem 2rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-glow));
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    border-radius: 999px;
+    box-shadow: 0 0 20px rgba(108, 92, 231, 0.6), 0 0 40px rgba(108, 92, 231, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .original-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 28px rgba(108, 92, 231, 0.85), 0 0 55px rgba(108, 92, 231, 0.45);
+  }
+  footer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 2rem;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="nav">
+    <a href="../../index.html">&larr; Manab AI</a>
+    <a class="lang-badge" href="https://jassyjhon567-art.github.io/aifocusdaily//posts/bn/on-premise-ai-code-review-how-we-deployed-claude-locally-in-an-air-gapped-enviro.html">বাংলা</a>
+  </div>
+  <h1>On-Premise AI Code Review: How We Deployed Claude Locally in an Air-Gapped Environment (Setup Guide)</h1>
+  <div class="meta">dev.to &middot; Sun, 19 Jul 2026 18:44:52 +0000</div>
+  <img class="hero-img" src="../../images/on-premise-ai-code-review-how-we-deployed-claude-locally-in-an-air-gapped-enviro.jpg" alt="On-Premise AI Code Review: How We Deployed Claude Locally in an Air-Gapped Environment (Setup Guide)" referrerpolicy="no-referrer"
+       onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=1200&h=675&fit=crop';">
+  <p class="summary">The security officer said no. Not "maybe with some modifications." Not "let us review the data handling policy." No. Cloud-hosted AI code review was not going to happen in their...</p>
+  <div class="content">
+    <p>The security officer said no. Not "maybe with some modifications." Not "let us review the data handling policy." No. Cloud-hosted AI code review was not going to happen in their environment. The codebase contained classified material. The network was air-gapped. No data leaves the building. End of conversation. This was a defence contractor. Their development team was writing code that couldn't touch any external API, any cloud service, any SaaS platform. But they were also writing 200,000+ lines of code per year with a team that was struggling to maintain review quality across twelve engineers, the exact problem that AI code review solves. The challenge: deploy AI code review capability that runs entirely on-premise, in an air-gapped network, with no external connectivity, while meeting the security and compliance requirements of a classified computing environment. This is the guide we wish existed when we started that project. It covers hardware requirements, model selection, inference server setup, CI/CD integration and the security architecture that made it pass the compliance review. Why air-gapped AI code review is different from everything else Most AI code review guides assume cloud connectivity. The model runs on the provider's infrastructure. The code is sent via API. The review comes back. The security question is about data handling policies, encryption in transit and vendor trust. In an air-gapped environment, none of that applies. The model runs on hardware you control. The code never leaves your network. There is no vendor to trust because there is no vendor in the loop. This sounds simpler from a security perspective. In some ways it is. In other ways it's significantly more complex because you're now responsible for the entire stack, model selection, quantisation, inference hardware, deployment, monitoring, updating and maintaining the system that in a cloud deployment is someone else's problem. Hardware requirements The hardware question is the first decision and the one that constrains everything else. For on-premise AI code review , the model needs to be large enough to understand code semantics, identify patterns and generate meaningful review comments. Small models (7B parameters) can handle basic linting and style checking but lack the reasoning capability for substantive code review. Large models (70B+ parameters) provide review quality approaching cloud-hosted frontier models but require significant GPU infrastructure. Our recommendation for production on-premise code review: For teams under 25 engineers with moderate review volume: a single server with 2x NVIDIA A100 80GB GPUs running a 70B parameter model at 4-bit quantisation. This handles the inference load for a team producing 15-25 PRs per day with acceptable latency (30-60 seconds per review). Total hardware cost: approximately $30,000-$45,000 for the GPU server, which amortises over three years to roughly $10,000-$15,000 per year, comparable to cloud-hosted review tool licensing for a team of this size. For teams of 25-75 engineers: two inference servers with 4x A100 80GB GPUs each, behind a load balancer. This handles 50-80 PRs per day with consistent latency. The second server provides redundancy, if one goes down, review capability continues at reduced throughput rather than stopping entirely. For teams above 75 engineers: a dedicated inference cluster with horizontal scaling. At this scale, the infrastructure management becomes a full-time operations concern and we recommend dedicated MLOps support. CPU-only inference is technically possible using llama.cpp with heavily quantised models (4-bit or lower) but the latency is prohibitive for production use, 3-5 minutes per review versus 30-60 seconds on GPU. We tested it and abandoned it after the team stopped waiting for reviews and merged without them. Model selection In an air-gapped environment, you're limited to open-weight models that can be downloaded, transferred via physical media and deployed locally. The frontier closed models (Claude, GPT) are not available offline. The models we've tested and can recommend for on-premise code review as of mid-2026: Llama 3.3 70B provides the best balance of code understanding, review quality and inference efficiency. At 4-bit quantisation (GPTQ or AWQ), it fits on 2x A100 80GB GPUs with room for reasonable batch sizes. The review quality on Python, TypeScript, Java and C++ codebases is strong, it catches logical errors, security vulnerabilities and pattern inconsistencies at a level that meaningfully reduces human review burden. DeepSeek Coder V3 is specialised for code tasks and provides excellent results on code-specific review. The model is smaller (33B in its most capable variant) and runs on less hardware, making it a good choice for smaller deployments. It outperforms Llama 3.3 70B on code-specific benchmarks but has weaker general reasoning for architectural review comments. Qwen 2.5 Coder 32B is another strong code-specialised option that balances quality and resource requirements well. Our recommendation: start with DeepSeek Coder V3 for code-focused review, add Llama 3.3 70B if you need broader architectural analysis and review comments that explain why something is a problem, not just that it is one. Inference server setup We use vLLM as the inference server for production deployments. It handles model loading, request queuing, continuous batching and provides an OpenAI-compatible API endpoint that makes integration with existing tools straightforward. The deployment architecture: ┌─────────────────────────────────────────────┐ │ Air-gapped network │ │ │ │ ┌───────────┐ ┌──────────────────────┐ │ │ │ GitLab │───▶│ CI/CD Runner │ │ │ │ Server │ │ (review pipeline) │ │ │ └───────────┘ └──────────┬───────────┘ │ │ │ │ │ ▼ │ │ ┌──────────────────────┐ │ │ │ Load Balancer │ │ │ └──────────┬───────────┘ │ │ ┌─────────┴─────────┐ │ │ ▼ ▼ │ │ ┌──────────────┐ ┌──────────────┐ │ │ vLLM Node 1 │ │ vLLM Node 2 │ │ │ 2x A100 │ │ 2x A100 │ │ │ Llama 70B │ │ DeepSeek │ │ └──────────────┘ └──────────────┘ │ │ └─────────────────────────────────────────────┘ The dual-node setup serves two purposes: redundancy (either node can handle all traffic if the other is down) and model specialisation (one node runs the general-purpose model for architectural review, the other runs the code-specialised model for detailed code analysis). The review pipeline can route different review types to different models. Setting up vLLM on each node: # Install vLLM (transfer wheel files via approved media) pip install vllm --no-index --find-links /media/packages/ # Start the inference server python -m vllm.entrypoints.openai.api_server \ --model /models/llama-3.3-70b-awq/ \ --quantization awq \ --tensor-parallel-size 2 \ --max-model-len 32768 \ --port 8000 \ --host 0.0.0.0 The tensor-parallel-size 2 flag splits the model across both GPUs. The max-model-len 32768 sets the maximum context window, large enough to review substantial diffs but not so large that it exhausts GPU memory. For the containerised deployment: FROM nvidia/cuda:12.4.0-base-ubuntu22.04 COPY ./packages /packages RUN pip install --no-index --find-links /packages vllm COPY ./models /models EXPOSE 8000 CMD ["python", "-m", "vllm.entrypoints.openai.api_server", \ "--model", "/models/llama-3.3-70b-awq/", \ "--quantization", "awq", \ "--tensor-parallel-size", "2", \ "--port", "8000"] CI/CD integration The review pipeline hooks into your existing CI/CD system. We'll use GitLab CI as the example since it's the most common on-premise Git platform in classified environments, but the pattern adapts to any CI system. The pipeline stage triggers on every merge request. It extracts the diff, formats the review prompt with project-specific conventions, sends it to the vLLM endpoint, parses the response and posts review comments back to the merge request. # .gitlab-ci.yml ai-code-review : stage : review script : - python scripts/ai_review.py --diff-ref $CI_MERGE_REQUEST_DIFF_BASE_SHA --target-ref $CI_COMMIT_SHA --mr-iid $CI_MERGE_REQUEST_IID --api-url http://vllm-lb.internal:8000/v1 --rules-file .review-rules.md rules : - if : $CI_PIPELINE_SOURCE == "merge_request_event" The review script: import requests import subprocess import json def get_diff ( base_ref , target_ref ): result = subprocess . run ( [ " git " , " diff " , base_ref , target_ref ], capture_output = True , text = True ) return result . stdout def request_review ( diff , rules , api_url ): prompt = f """ Review this code diff against these project rules: { rules } Diff: { diff } Provide review comments as JSON array with fields: file, line, severity (critical/warning/info), comment Only flag genuine issues. No style-only comments unless they violate a specific rule above. """ response = requests . post ( f " { api_url } /chat/completions " , json = { " model " : " llama-3.3-70b-awq " , " messages " : [{ " role " : " user " , " content " : prompt }], " temperature " : 0.1 , " max_tokens " : 4096 } ) return json . loads ( response . json ()[ " choices " ][ 0 ][ " message " ][ " content " ] ) The temperature: 0.1 is deliberate, we want consistent, deterministic reviews, not creative suggestions. The rules file ( .review-rules.md ) contains project-specific conventions that the model uses as review criteria, similar to how cloud-hosted review tools use configuration files. Security considerations for classified environments The model files themselves need security classification review before deployment. Open-weight models trained on public data don't contain classified information, but the review process requires documentation that the model was trained on public data only and that no classified data has been used for fine-tuning or prompt construction. The inference server must run in the same security zone as the codebase. No network paths between the inference server and any external network, even through proxy or gateway. The load balancer is internal only. Audit logging captures every review request and response, the diff submitted, the review comments generated and the pipeline metadata. This audit trail is required for both security compliance and for monitoring the AI review quality over time. Model updates require the same physical media transfer process as the initial deployment. When a new model version is released, it's downloaded on an unclassified system, transferred via approved media and deployed through the standard change management process. This means model updates happen quarterly at most, not continuously. Air-gapped deployment is one piece of the puzzle. The full compliance and security framework for on-premise AI code review, covering SOC 2, HIPAA, PCI and government security requirements, is in our complete guide. It covers the policy documentation, access controls and audit procedures that the technical deployment needs to operate within. Published by Dextra Labs, AI Consulting and Enterprise Agent Development</p>
+    <p>The report highlights key developments related to "On-Premise AI Code Review: How We Deployed Claude Locally in an Air-Gapped Environment (Setup Guide)", offering context for readers who want to understand the broader implications of this story as it continues to unfold.</p>
+    <p>Readers interested in the full details, including direct quotes and additional context, are encouraged to consult the original source linked at the end of this article.</p>
+  </div>
+  <div class="cta-wrap">
+    <a class="original-btn" href="https://dev.to/dextralabs/on-premise-ai-code-review-how-we-deployed-claude-locally-in-an-air-gapped-environment-setup-guide-5f6h" target="_blank" rel="noopener noreferrer">
+      Read More &mdash; Original Article
+    </a>
+  </div>
+  <footer>&copy; 2026 Manab AI &mdash; Automated Knowledge Platform</footer>
+</div>
+</body>
+</html>
