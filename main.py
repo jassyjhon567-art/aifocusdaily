@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Manab AI - Autonomous Bilingual (EN/BN) Knowledge & News Engine
+AI News - Autonomous Bilingual (EN/BN) Knowledge & News Engine
 =================================================================
 Serverless, database-free content pipeline. Reads RSS feeds across
 10 niches, deduplicates stories, expands + translates content with
@@ -62,7 +62,7 @@ IMAGES_DIR = "images"
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GCLOUD_KEY = os.environ.get("GCLOUD_KEY", "")
-SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "https://example.github.io/manab-ai")
+SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "https://example.github.io/ai-news")
 
 # NOTE: gemini-1.5-flash was retired long ago and now returns 400/404 errors.
 # gemini-flash-latest is a Google-maintained alias that always points at the
@@ -611,7 +611,7 @@ POST_TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{title} | Manab AI</title>
+<title>{title} | AI News</title>
 <meta name="description" content="{summary_attr}">
 <meta name="keywords" content="{keywords}">
 <link rel="canonical" href="{canonical_url}">
@@ -735,7 +735,7 @@ POST_TEMPLATE = """<!DOCTYPE html>
 <body>
 <div class="wrap">
   <div class="nav">
-    <a href="../../index.html">&larr; Manab AI</a>
+    <a href="../../index.html">&larr; AI News</a>
     <a class="lang-badge" href="{other_lang_url}">{other_lang_label}</a>
   </div>
   <h1>{title}</h1>
@@ -751,7 +751,7 @@ POST_TEMPLATE = """<!DOCTYPE html>
       Read More &mdash; Original Article
     </a>
   </div>
-  <footer>&copy; {year} Manab AI &mdash; Automated Knowledge Platform</footer>
+  <footer>&copy; {year} AI News &mdash; Automated AI &amp; Tech News Platform</footer>
 </div>
 </body>
 </html>
@@ -817,10 +817,10 @@ def generate_post_html(
         "dateModified": published_iso,
         "inLanguage": lang,
         "mainEntityOfPage": {"@type": "WebPage", "@id": canonical_url},
-        "author": {"@type": "Organization", "name": "Manab AI"},
+        "author": {"@type": "Organization", "name": "AI News"},
         "publisher": {
             "@type": "Organization",
-            "name": "Manab AI",
+            "name": "AI News",
             "logo": {"@type": "ImageObject", "url": f"{SITE_BASE_URL}/images/logo.png"},
         },
     }
@@ -941,14 +941,28 @@ def sync_index_html_seo():
     if start_marker not in html_content or end_marker not in html_content:
         return
 
-    site_name = "Manab AI — Bilingual Knowledge & News Platform"
+    site_name = "AI News — Latest AI, Tech & Science News in English & Bengali"
     site_desc = (
-        "Manab AI is an autonomous bilingual (English/Bengali) knowledge and "
-        "news platform covering AI, tech, science, health, business and more."
+        "AI News brings you the latest AI news, tech news, science, health and "
+        "business news — auto-updated daily in both English and Bengali (বাংলা)."
     )
     home_url = f"{SITE_BASE_URL}/index.html"
-    json_ld = json.dumps(
-        {"@context": "https://schema.org", "@type": "WebSite", "name": "Manab AI", "url": home_url},
+    website_ld = json.dumps(
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "AI News",
+            "url": home_url,
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": f"{home_url}?q={{search_term_string}}",
+                "query-input": "required name=search_term_string",
+            },
+        },
+        ensure_ascii=False,
+    )
+    org_ld = json.dumps(
+        {"@context": "https://schema.org", "@type": "Organization", "name": "AI News", "url": home_url},
         ensure_ascii=False,
     )
 
@@ -963,7 +977,10 @@ def sync_index_html_seo():
         f'<meta name="twitter:title" content="{html.escape(site_name, quote=True)}">',
         f'<meta name="twitter:description" content="{html.escape(site_desc, quote=True)}">',
         '<script type="application/ld+json">',
-        json_ld,
+        website_ld,
+        "</script>",
+        '<script type="application/ld+json">',
+        org_ld,
         "</script>",
         end_marker,
     ])
@@ -1072,7 +1089,7 @@ def fetch_feed_entries(niche, url, limit=5):
 # 12. MAIN PIPELINE
 # ---------------------------------------------------------------------------
 def main():
-    print("=== Manab AI content engine starting ===")
+    print("=== AI News content engine starting ===")
     os.makedirs(POSTS_DIR + "/en", exist_ok=True)
     os.makedirs(POSTS_DIR + "/bn", exist_ok=True)
     os.makedirs(IMAGES_DIR, exist_ok=True)
@@ -1208,7 +1225,7 @@ def main():
     generate_sitemap()
     generate_robots_txt()
 
-    print("=== Manab AI content engine finished ===")
+    print("=== AI News content engine finished ===")
 
 
 if __name__ == "__main__":
