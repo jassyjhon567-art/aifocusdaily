@@ -1,4 +1,4 @@
-name: Manab AI Content Engine
+name: AI News Content Engine
 
 on:
   schedule:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: manab-ai-content-engine
+  group: ai-news-content-engine
   cancel-in-progress: false
 
 jobs:
@@ -35,7 +35,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests feedparser google-auth
 
-      - name: Run Manab AI content engine
+      - name: Run AI News content engine
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GCLOUD_KEY: ${{ secrets.GCLOUD_KEY }}
@@ -46,7 +46,7 @@ jobs:
       - name: Commit and push generated content
         run: |
           git config --local user.email "actions@github.com"
-          git config --local user.name "Manab AI Bot"
+          git config --local user.name "AI News Bot"
           git add news.json posts/ images/ sitemap.xml robots.txt index.html
           if git diff --cached --quiet; then
             echo "No content changes to commit."
